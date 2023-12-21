@@ -6,4 +6,4 @@ TriGuard Apipost项目地址：https://console-docs.apipost.cn/preview/0b7e9b387
 
 TriGuardBackend Gitee地址：https://gitee.com/tinghuaprison/tri-guard-backend
 
-由于Github的连接不稳定，使用gitee管理jenkins的源码仓库，当向仓库push代码后，jenkins将自动构建项目，执行deploy.sh进行更新
+由于Github的连接不稳定，使用gitee管理jenkins的源码仓库，当向仓库push代码后，jenkins会自动构建项目，将打包好的jar包上传到应用服务器上，然后调用`start.sh`->`run.sh`进行更新
