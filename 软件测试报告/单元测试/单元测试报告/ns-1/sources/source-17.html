@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MomentReportServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: MomentReportServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MomentReportServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MomentReportServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.MomentReport;
+&nbsp;import com.triguard.backend.mapper.MomentReportMapper;
+&nbsp;import com.triguard.backend.service.MomentReportService;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class MomentReportServiceImpl extends ServiceImpl&lt;MomentReportMapper, MomentReport&gt; implements MomentReportService {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 举报动态
+&nbsp;     *
+&nbsp;     * @param accountId 举报人id
+&nbsp;     * @param momentId  被举报动态id
+&nbsp;     * @param reason    举报理由
+&nbsp;     * @return 是否举报成功
+&nbsp;     */
+&nbsp;    public Boolean saveMomentReport(Integer accountId, Integer momentId, String reason) {
+<b class="fc">&nbsp;        MomentReport momentReport = new MomentReport();</b>
+<b class="fc">&nbsp;        momentReport.setAccountId(accountId);</b>
+<b class="fc">&nbsp;        momentReport.setMomentId(momentId);</b>
+<b class="fc">&nbsp;        momentReport.setReason(reason);</b>
+<b class="fc">&nbsp;        momentReport.setCreatedAt(new Date());</b>
+<b class="fc">&nbsp;        return this.save(momentReport);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 01:15</div>
+</div>
+</body>
+</html>

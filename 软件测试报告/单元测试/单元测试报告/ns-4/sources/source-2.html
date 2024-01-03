@@ -1,0 +1,290 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > AdminArticleController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller.admin</a>
+</div>
+
+<h1>Coverage Summary for Class: AdminArticleController (com.triguard.backend.controller.admin)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdminArticleController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (36/48)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AdminArticleController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">AdminArticleController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">AdminArticleController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">AdminArticleController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (36/48)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller.admin;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Article;
+&nbsp;import com.triguard.backend.service.ArticleService;
+&nbsp;import com.triguard.backend.service.FileService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/admin/article&quot;)
+&nbsp;@Tag(name = &quot;管理员文章相关接口&quot;)
+<b class="fc">&nbsp;public class AdminArticleController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    ArticleService articleService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FileService fileService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    StringRedisTemplate stringRedisTemplate;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发布文章
+&nbsp;     * @param type 文章类型
+&nbsp;     * @param title 文章标题
+&nbsp;     * @param subtitle 文章副标题
+&nbsp;     * @param content 文章内容
+&nbsp;     * @param cover 文章封面
+&nbsp;     * @return 发布成功的文章
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;发布文章&quot;)
+&nbsp;    public RestBean&lt;Article&gt; createArticle(@RequestParam String type,
+&nbsp;                                           @RequestParam String title,
+&nbsp;                                           @RequestParam(required = false) String subtitle,
+&nbsp;                                           @RequestParam String content,
+&nbsp;                                           @RequestPart(required = false) MultipartFile cover,
+&nbsp;                                           HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        Article article = new Article();</b>
+<b class="fc">&nbsp;        article.setType(type);</b>
+<b class="fc">&nbsp;        article.setTitle(title);</b>
+<b class="fc">&nbsp;        article.setSubtitle(subtitle);</b>
+<b class="fc">&nbsp;        article.setContent(content);</b>
+<b class="fc">&nbsp;        if (cover != null) {</b>
+<b class="nc">&nbsp;            article.setCover(fileService.uploadMultipartFile(cover));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Article savedArticle = articleService.createArticle(article);</b>
+<b class="nc">&nbsp;        if (savedArticle == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;发布失败&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            stringRedisTemplate.delete(&quot;article_draft_&quot; + accountId);</b>
+<b class="nc">&nbsp;            return RestBean.success(savedArticle);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更新文章
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @param type 文章类型
+&nbsp;     * @param title 文章标题
+&nbsp;     * @param subtitle 文章副标题
+&nbsp;     * @param content 文章内容
+&nbsp;     * @param cover 文章封面
+&nbsp;     * @return 更新成功的文章
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/update&quot;)
+&nbsp;    @Operation(summary = &quot;更新文章&quot;)
+&nbsp;    public RestBean&lt;Article&gt; updateArticle(@RequestParam Integer articleId,
+&nbsp;                                           @RequestParam(required = false) String type,
+&nbsp;                                           @RequestParam(required = false) String title,
+&nbsp;                                           @RequestParam(required = false) String subtitle,
+&nbsp;                                           @RequestParam String content,
+&nbsp;                                           @RequestPart(required = false) MultipartFile cover) {
+<b class="fc">&nbsp;        Article article = articleService.getById(articleId);</b>
+<b class="fc">&nbsp;        if (article == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;文章不存在&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        article.setType(type);</b>
+<b class="fc">&nbsp;        article.setTitle(title);</b>
+<b class="fc">&nbsp;        article.setSubtitle(subtitle);</b>
+<b class="fc">&nbsp;        article.setContent(content);</b>
+<b class="fc">&nbsp;        article.setCover(fileService.uploadMultipartFile(cover));</b>
+<b class="nc">&nbsp;        return articleService.updateById(article) ? RestBean.success(article) : RestBean.failure(400, &quot;更新失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 创建文章草稿
+&nbsp;     * @param type 文章类型
+&nbsp;     * @param title 文章标题
+&nbsp;     * @param subtitle 文章副标题
+&nbsp;     * @param content 文章内容
+&nbsp;     * @param request 请求
+&nbsp;     * @return 创建成功的文章草稿
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/draft&quot;)
+&nbsp;    @Operation(summary = &quot;创建文章草稿，每个人只能有一个草稿，为了简化这里不能设置封面&quot;)
+&nbsp;    public RestBean&lt;Article&gt; createArticleDraft(@RequestParam String type,
+&nbsp;                                                @RequestParam String title,
+&nbsp;                                                @RequestParam(required = false) String subtitle,
+&nbsp;                                                @RequestParam String content,
+&nbsp;                                                HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        Article article = new Article();</b>
+<b class="fc">&nbsp;        article.setType(type);</b>
+<b class="fc">&nbsp;        article.setTitle(title);</b>
+<b class="fc">&nbsp;        article.setSubtitle(subtitle);</b>
+<b class="fc">&nbsp;        article.setContent(content);</b>
+<b class="fc">&nbsp;        article.setCreatedAt(new Date());</b>
+<b class="fc">&nbsp;        article.setUpdatedAt(new Date());</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="fc">&nbsp;            String articleDraft = objectMapper.writeValueAsString(article);</b>
+<b class="fc">&nbsp;            stringRedisTemplate.opsForValue().set(&quot;article_draft_&quot; + accountId, articleDraft);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;创建失败&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取文章草稿
+&nbsp;     * @param request 请求
+&nbsp;     * @return 文章草稿
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/draft&quot;)
+&nbsp;    @Operation(summary = &quot;获取文章草稿&quot;)
+&nbsp;    public RestBean&lt;Article&gt; getArticleDraft(HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        String articleDraft = stringRedisTemplate.opsForValue().get(&quot;article_draft_&quot; + accountId);</b>
+<b class="fc">&nbsp;        if (articleDraft == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;草稿不存在&quot;);</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="fc">&nbsp;            ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="fc">&nbsp;            Article article = objectMapper.readValue(articleDraft, Article.class);</b>
+<b class="fc">&nbsp;            return RestBean.success(article);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;获取失败&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除文章
+&nbsp;     *
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @return 是否删除成功
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除文章&quot;)
+&nbsp;    public RestBean&lt;Boolean&gt; deleteArticle(@RequestParam Integer articleId) {
+<b class="fc">&nbsp;        return articleService.removeById(articleId) ? RestBean.success(true) : RestBean.failure(400, &quot;删除失败&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

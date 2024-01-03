@@ -1,0 +1,259 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodSugarController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodSugarController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodSugarController</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (18/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BloodSugarController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">BloodSugarController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">BloodSugarController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">BloodSugarController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (18/24)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.BloodSugar;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodPressure.BloodPressureUpdateVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodSugar.BloodSugarCreateVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodSugar.BloodSugarFilterVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodSugar.BloodSugarUpdateVO;
+&nbsp;import com.triguard.backend.entity.vo.response.BloodSugar.BloodSugarFilteredVO;
+&nbsp;import com.triguard.backend.service.BloodSugarService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import jakarta.validation.constraints.Null;
+&nbsp;import jakarta.validation.constraints.Pattern;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于血糖相关Controller包含用户的血糖信息的增删改查
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/blood-sugar&quot;)
+&nbsp;@Tag(name = &quot;血糖相关接口&quot;)
+<b class="fc">&nbsp;public class BloodSugarController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodSugarService bloodSugarService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加血糖记录
+&nbsp;     * @param vo 血糖记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;添加血糖记录&quot;)
+&nbsp;    public RestBean&lt;BloodSugar&gt; recordBloodSugar(@RequestBody @Valid BloodSugarCreateVO vo,
+&nbsp;                                                 HttpServletRequest request){
+&nbsp;        Integer accountId;
+<b class="fc">&nbsp;        if (vo.getAccountId() != null) {</b>
+<b class="fc">&nbsp;            accountId = vo.getAccountId();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        BloodSugar bloodSugar = bloodSugarService.createBloodSugar(accountId, vo);</b>
+<b class="fc">&nbsp;        return bloodSugar == null ? RestBean.failure(400, &quot;添加血糖记录失败&quot;) : RestBean.success(bloodSugar);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除血糖记录
+&nbsp;     * @param id 血糖记录id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除血糖记录&quot;)
+&nbsp;    public RestBean&lt;Void&gt; deleteBloodSugar(@RequestParam Integer id){
+<b class="fc">&nbsp;        String message = bloodSugarService.deleteBloodSugar(id);</b>
+<b class="fc">&nbsp;        return message == null ? RestBean.success() : RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 修改血糖记录
+&nbsp;     * @param vo 血糖记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/update&quot;)
+&nbsp;    @Operation(summary = &quot;修改血糖记录&quot;)
+&nbsp;    public RestBean&lt;Void&gt; updateBloodSugar(@RequestBody @Valid BloodSugarUpdateVO vo){
+<b class="fc">&nbsp;        String message = bloodSugarService.updateBloodSugar(vo);</b>
+<b class="fc">&nbsp;        return message == null ? RestBean.success() : RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血糖记录
+&nbsp;     * @param date 日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-by-date&quot;)
+&nbsp;    @Operation(summary = &quot;按日期获取血糖记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;BloodSugar&gt;&gt; getBloodSugarByDate(@RequestParam(required = false) Integer accountId,
+&nbsp;                                                          @RequestParam @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;) String date,
+&nbsp;                                              HttpServletRequest request){
+<b class="fc">&nbsp;        if (accountId == null) {</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodSugar&gt; bloodSugarList = bloodSugarService.getBloodSugar(accountId, date);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodSugarList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血糖记录
+&nbsp;     * @param startDate 开始日期
+&nbsp;     * @param endDate 结束日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-by-date-range&quot;)
+&nbsp;    @Operation(summary = &quot;按日期范围获取血糖记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;BloodSugar&gt;&gt; getBloodSugarByDateRange(@RequestParam(required = false) Integer accountId,
+&nbsp;                                                               @RequestParam @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;) String startDate,
+&nbsp;                                                               @RequestParam @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;) String endDate,
+&nbsp;                                                               HttpServletRequest request){
+<b class="fc">&nbsp;        if (accountId == null) {</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodSugar&gt; bloodSugarList = bloodSugarService.getBloodSugar(accountId, startDate, endDate);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodSugarList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血糖记录
+&nbsp;     * @param vo 数据筛选表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/get-by-filter&quot;)
+&nbsp;    @Operation(summary = &quot;按筛选条件获取血糖记录&quot;)
+&nbsp;    public RestBean&lt;BloodSugarFilteredVO&gt; getBloodSugarByFilter(@RequestBody @Valid BloodSugarFilterVO vo,
+&nbsp;                                                   HttpServletRequest request){
+&nbsp;        Integer accountId;
+<b class="nc">&nbsp;        if (vo.getAccountId() != null) {</b>
+<b class="nc">&nbsp;            accountId = vo.getAccountId();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;BloodSugar&gt; bloodSugarList = bloodSugarService.getBloodSugar(accountId, vo);</b>
+<b class="nc">&nbsp;        BloodSugarFilteredVO filteredVO = new BloodSugarFilteredVO(bloodSugarList);</b>
+<b class="nc">&nbsp;        return RestBean.success(filteredVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

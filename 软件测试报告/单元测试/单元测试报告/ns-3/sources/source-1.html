@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > AccountController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: AccountController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AccountController</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    45.8%
+  </span>
+  <span class="absValue">
+    (11/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AccountController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">AccountController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">AccountController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">AccountController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    45.8%
+  </span>
+  <span class="absValue">
+    (11/24)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Account;
+&nbsp;import com.triguard.backend.entity.vo.response.Account.AccountInfoVO;
+&nbsp;import com.triguard.backend.service.AccountService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import com.triguard.backend.utils.JwtUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.security.core.userdetails.User;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/account&quot;)
+&nbsp;@Tag(name = &quot;账户相关接口&quot;)
+<b class="fc">&nbsp;public class AccountController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AccountService accountService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    JwtUtils jwtUtils;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取账户信息
+&nbsp;     *
+&nbsp;     * @param request 请求
+&nbsp;     * @return 账户信息
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/info&quot;)
+&nbsp;    @Operation(summary = &quot;获取账户信息&quot;)
+&nbsp;    public RestBean&lt;AccountInfoVO&gt; getAccountInfo(HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        Account account = accountService.getById(accountId);</b>
+<b class="fc">&nbsp;        AccountInfoVO accountInfoVO = new AccountInfoVO();</b>
+<b class="fc">&nbsp;        BeanUtils.copyProperties(account, accountInfoVO);</b>
+<b class="fc">&nbsp;        if (account.getProfile() == null) {</b>
+<b class="nc">&nbsp;            accountInfoVO.setProfile(ConstUtils.DEFAULT_AVATAR);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success(accountInfoVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 使用jwt登录账户，并进行续签
+&nbsp;     *
+&nbsp;     * @param request 请求
+&nbsp;     * @return 账户信息
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/login&quot;)
+&nbsp;    @Operation(summary = &quot;使用jwt登录账户，并进行续签&quot;)
+&nbsp;    public RestBean&lt;String&gt; login(HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        Account account = accountService.getById(accountId);</b>
+<b class="nc">&nbsp;        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="nc">&nbsp;        if (authentication != null &amp;&amp; authentication.getPrincipal() instanceof UserDetails) {</b>
+<b class="nc">&nbsp;            User user = (User) authentication.getPrincipal();</b>
+<b class="nc">&nbsp;            String newToken = jwtUtils.createJwt(user, account.getUsername(), accountId);</b>
+<b class="nc">&nbsp;            String oldToken = request.getHeader(&quot;Authorization&quot;);</b>
+<b class="nc">&nbsp;            if (jwtUtils.invalidateJwt(oldToken)) {</b>
+<b class="nc">&nbsp;                return RestBean.success(newToken);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                return RestBean.failure(400, &quot;登录失败&quot;);</b>
+&nbsp;            }
+&nbsp;        } else {
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;登录失败&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置账户头像
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/set-profile&quot;)
+&nbsp;    @Operation(summary = &quot;设置账户头像&quot;)
+&nbsp;    public RestBean&lt;String&gt; setProfile(@RequestPart MultipartFile profile,
+&nbsp;                                     HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        String url = accountService.setProfile(accountId, profile);</b>
+<b class="fc">&nbsp;        if (url == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;上传失败&quot;);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return RestBean.success(url);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ArticleFavoritesServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: ArticleFavoritesServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ArticleFavoritesServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (23/23)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ArticleFavoritesServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (23/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.ArticleFavorites;
+&nbsp;import com.triguard.backend.mapper.ArticleFavoritesMapper;
+&nbsp;import com.triguard.backend.service.ArticleFavoritesService;
+&nbsp;import com.triguard.backend.service.ArticleService;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class ArticleFavoritesServiceImpl extends ServiceImpl&lt;ArticleFavoritesMapper, ArticleFavorites&gt; implements ArticleFavoritesService {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    ArticleService articleService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加文章收藏
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @return 更新后的文章收藏实体类
+&nbsp;     */
+&nbsp;    public ArticleFavorites addArticleFavorites(Integer accountId, Integer articleId) {
+<b class="fc">&nbsp;        ArticleFavorites articleFavorites = new ArticleFavorites();</b>
+<b class="fc">&nbsp;        articleFavorites.setAccountId(accountId);</b>
+<b class="fc">&nbsp;        articleFavorites.setArticleId(articleId);</b>
+<b class="fc">&nbsp;        articleFavorites.setArticleType(articleService.getById(articleId).getType());</b>
+<b class="fc">&nbsp;        return this.save(articleFavorites) ? articleFavorites : null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据用户id获取疾病预防文章收藏列表
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @return 文章收藏列表
+&nbsp;     */
+&nbsp;    public List&lt;ArticleFavorites&gt; getDiseaseArticleFavorites(Integer accountId, Integer page, Integer size) {
+<b class="fc">&nbsp;        Page&lt;ArticleFavorites&gt; articleFavoritesPage = new Page&lt;&gt;(page, size);</b>
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .eq(&quot;article_type&quot;, &quot;disease&quot;)</b>
+<b class="fc">&nbsp;                .page(articleFavoritesPage)</b>
+<b class="fc">&nbsp;                .getRecords();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据用户id获取科普文章收藏列表
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @return 文章收藏列表
+&nbsp;     */
+&nbsp;    public List&lt;ArticleFavorites&gt; getScienceArticleFavorites(Integer accountId, Integer page, Integer size) {
+<b class="fc">&nbsp;        Page&lt;ArticleFavorites&gt; articleFavoritesPage = new Page&lt;&gt;(page, size);</b>
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .eq(&quot;article_type&quot;, &quot;science&quot;)</b>
+<b class="fc">&nbsp;                .page(articleFavoritesPage)</b>
+<b class="fc">&nbsp;                .getRecords();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据用户id和文章id获取文章收藏
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @return 文章收藏
+&nbsp;     */
+&nbsp;    public ArticleFavorites getArticleFavorites(Integer accountId, Integer articleId) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .eq(&quot;article_id&quot;, articleId)</b>
+<b class="fc">&nbsp;                .one();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据用户id和文章id删除文章收藏
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @return 是否删除成功
+&nbsp;     */
+&nbsp;    public boolean deleteArticleFavorites(Integer accountId, Integer articleId) {
+<b class="fc">&nbsp;        return this.removeById(this.getArticleFavorites(accountId, articleId).getId());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

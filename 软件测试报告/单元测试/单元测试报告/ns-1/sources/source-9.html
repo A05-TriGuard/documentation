@@ -1,0 +1,477 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > GuardController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: GuardController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GuardController</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (18/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78.8%
+  </span>
+  <span class="absValue">
+    (93/118)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GuardController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">GuardController$$SpringCGLIB$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (18/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78.8%
+  </span>
+  <span class="absValue">
+    (93/118)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Account;
+&nbsp;import com.triguard.backend.entity.dto.Guard;
+&nbsp;import com.triguard.backend.entity.dto.GuardGroup;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.*;
+&nbsp;import com.triguard.backend.service.AccountService;
+&nbsp;import com.triguard.backend.service.GuardGroupMemberService;
+&nbsp;import com.triguard.backend.service.GuardGroupService;
+&nbsp;import com.triguard.backend.service.GuardService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.text.SimpleDateFormat;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Stream;
+&nbsp;
+&nbsp;/**
+&nbsp; * 监护系统相关API
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api&quot;)
+&nbsp;@Tag(name = &quot;监护人相关接口&quot;)
+<b class="fc">&nbsp;public class GuardController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    GuardService guardService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AccountService accountService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    GuardGroupService guardGroupService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    GuardGroupMemberService guardGroupMemberService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取监护人列表
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 监护人列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/guardian/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取监护人列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;GuardianInfoVO&gt;&gt; getGuardianList(HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer wardId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;Guard&gt; guardList = guardService.getGuardianList(wardId);</b>
+<b class="fc">&nbsp;        List&lt;GuardianInfoVO&gt; guardianInfoVOS = guardList.stream().map(guard -&gt; {</b>
+<b class="fc">&nbsp;            GuardianInfoVO guardianInfoVO = new GuardianInfoVO();</b>
+<b class="fc">&nbsp;            guardianInfoVO.setAccountId(guard.getGuardianId());</b>
+<b class="fc">&nbsp;            guardianInfoVO.setNickname(guard.getGuardianNickname());</b>
+<b class="fc">&nbsp;            Account account = accountService.getById(guard.getGuardianId());</b>
+<b class="fc">&nbsp;            guardianInfoVO.setUsername(account.getUsername());</b>
+<b class="fc">&nbsp;            guardianInfoVO.setEmail(account.getEmail());</b>
+<b class="fc">&nbsp;            guardianInfoVO.setImage(account.getProfile() == null ? ConstUtils.DEFAULT_AVATAR : account.getProfile());</b>
+<b class="fc">&nbsp;            return guardianInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        return RestBean.success(guardianInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护人
+&nbsp;     * @param guardianId 用户ID
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/guardian/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除监护人&quot;)
+&nbsp;    public RestBean&lt;String&gt; deleteGuardian(@RequestParam Integer guardianId,
+&nbsp;                                           HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer wardId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        String message = guardService.deleteGuardian(wardId, guardianId);</b>
+<b class="nc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置监护人昵称
+&nbsp;     * @param guardianId 用户ID
+&nbsp;     * @param nickname 监护人昵称
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 设置结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/guardian/set-nickname&quot;)
+&nbsp;    @Operation(summary = &quot;设置监护人昵称&quot;)
+&nbsp;    public RestBean&lt;String&gt; setGuardianNickname(@RequestParam Integer guardianId,
+&nbsp;                                                @RequestParam String nickname,
+&nbsp;                                                HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer wardId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        String message = guardService.setGuardianNickname(wardId, guardianId, nickname);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="fc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 邀请监护人
+&nbsp;     * @param email 监护人邮箱
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 邀请结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/guardian/invite&quot;)
+&nbsp;    @Operation(summary = &quot;邀请监护人&quot;)
+&nbsp;    public RestBean&lt;String&gt; inviteGuardian(@RequestParam String email,
+&nbsp;                                           HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer wardId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        String message = guardService.inviteGuardian(wardId, email);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取被监护人列表
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 被监护人列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/ward/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取被监护人列表&quot;)
+&nbsp;    public RestBean&lt;WardVO&gt; getWardList(HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;GuardGroup&gt; guardGroupList = guardGroupService.getGuardGroupList(guardianId);</b>
+<b class="fc">&nbsp;        List&lt;GuardGroupInfoVO&gt; guardGroupInfoVOS = guardGroupList.stream().map(guardGroup -&gt; {</b>
+<b class="nc">&nbsp;            GuardGroupInfoVO guardGroupInfoVO = new GuardGroupInfoVO();</b>
+<b class="nc">&nbsp;            guardGroupInfoVO.setGroupId(guardGroup.getId());</b>
+<b class="nc">&nbsp;            guardGroupInfoVO.setGroupName(guardGroup.getName());</b>
+<b class="nc">&nbsp;            return guardGroupInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        List&lt;Guard&gt; guardList = guardService.getWardList(guardianId);</b>
+<b class="fc">&nbsp;        List&lt;WardInfoVO&gt; wardInfoVOS = guardList.stream().map(guard -&gt; {</b>
+<b class="fc">&nbsp;            WardInfoVO wardInfoVO = new WardInfoVO();</b>
+<b class="fc">&nbsp;            wardInfoVO.setAccountId(guard.getWardId());</b>
+<b class="fc">&nbsp;            wardInfoVO.setNickname(guard.getWardNickname());</b>
+<b class="fc">&nbsp;            Account account = accountService.getById(guard.getWardId());</b>
+<b class="fc">&nbsp;            wardInfoVO.setUsername(account.getUsername());</b>
+<b class="fc">&nbsp;            wardInfoVO.setEmail(account.getEmail());</b>
+<b class="fc">&nbsp;            wardInfoVO.setImage(account.getProfile() == null ? ConstUtils.DEFAULT_AVATAR : account.getProfile());</b>
+<b class="fc">&nbsp;            return wardInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        WardVO wardVO = new WardVO(guardGroupInfoVOS, wardInfoVOS);</b>
+<b class="fc">&nbsp;        return RestBean.success(wardVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取被监护人邀请列表
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/ward/invitation/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取被监护人邀请列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;InvitationInfoVO&gt;&gt; getWardInvitationList(HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;Guard&gt; guardList = guardService.getWardInvitationList(guardianId);</b>
+<b class="fc">&nbsp;        List&lt;InvitationInfoVO&gt; invitationInfoVOS = guardList.stream().map(guard -&gt; {</b>
+<b class="fc">&nbsp;            InvitationInfoVO invitationInfoVO = new InvitationInfoVO();</b>
+<b class="fc">&nbsp;            invitationInfoVO.setInvitationId(guard.getId());</b>
+<b class="fc">&nbsp;            invitationInfoVO.setWardId(guard.getWardId());</b>
+<b class="fc">&nbsp;            invitationInfoVO.setWardName(guard.getWardNickname());</b>
+<b class="fc">&nbsp;            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</b>
+<b class="fc">&nbsp;            invitationInfoVO.setInvitationTime(simpleDateFormat.format(guard.getCreatedAt()));</b>
+<b class="fc">&nbsp;            return invitationInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        return RestBean.success(invitationInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 接受/拒绝被监护人邀请
+&nbsp;     * @param invitationId 邀请ID
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 接受结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/ward/invitation/accept&quot;)
+&nbsp;    @Operation(summary = &quot;接受/拒绝被监护人邀请&quot;)
+&nbsp;    public RestBean&lt;String&gt; acceptWardInvitation(@RequestParam Integer invitationId,
+&nbsp;                                                 @RequestParam Boolean isAccepted,
+&nbsp;                                                 HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        String message = guardService.acceptWardInvitation(guardianId, invitationId, isAccepted);</b>
+<b class="nc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取被监护人今日活动信息
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 设置结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/ward/activity&quot;)
+&nbsp;    @Operation(summary = &quot;获取被监护人今日活动信息&quot;)
+&nbsp;    public RestBean&lt;WardActivityVO&gt; getWardActivity(@RequestParam Integer wardId,
+&nbsp;                                                    HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        WardActivityVO wardActivityVO = guardService.getWardActivity(guardianId, wardId);</b>
+<b class="fc">&nbsp;        return RestBean.success(wardActivityVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除被监护人
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 是否成功
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/ward/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除被监护人&quot;)
+&nbsp;    public RestBean&lt;String&gt; deleteWard(@RequestParam Integer wardId,
+&nbsp;                                       HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        String message = guardService.deleteWard(guardianId, wardId);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;Integer&gt; groupIdList = guardGroupMemberService.getGroupIdList(guardianId);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            for (Integer groupId : groupIdList) {</b>
+<b class="nc">&nbsp;                guardGroupMemberService.deleteMember(groupId, wardId);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;删除失败&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置被监护人昵称
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @param nickname 被监护人昵称
+&nbsp;     * @param request HTTP请求
+&nbsp;     * @return 设置结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/ward/set-nickname&quot;)
+&nbsp;    @Operation(summary = &quot;设置被监护人昵称&quot;)
+&nbsp;    public RestBean&lt;String&gt; setWardNickname(@RequestParam Integer wardId,
+&nbsp;                                            @RequestParam String nickname,
+&nbsp;                                            HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        String message = guardService.setWardNickname(guardianId, wardId, nickname);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 创建监护组
+&nbsp;     * @param groupName 监护组名称
+&nbsp;     * @param wardIds wardIdList 被监护人ID列表
+&nbsp;     * @param request HTTP请求
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/guard-group/create&quot;)
+&nbsp;    @Operation(summary = &quot;创建监护组&quot;)
+&nbsp;    public RestBean&lt;String&gt; createGuardGroup(@RequestParam String groupName,
+&nbsp;                                             @RequestParam String wardIds,
+&nbsp;                                             HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;Integer&gt; wardIdList = Stream.of(wardIds.split(&quot;,&quot;))</b>
+<b class="fc">&nbsp;                .map(Integer::parseInt)</b>
+<b class="fc">&nbsp;                .toList();</b>
+<b class="fc">&nbsp;        String message = guardGroupService.createGuardGroup(guardianId, groupName, wardIdList);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取监护组活动信息
+&nbsp;     * @return 监护组活动信息
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/guard-group/activity&quot;)
+&nbsp;    @Operation(summary = &quot;获取监护组活动信息&quot;)
+&nbsp;    public RestBean&lt;GuardGroupActivityVO&gt; getGuardGroupActivity(@RequestParam Integer groupId,
+&nbsp;                                                                HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        GuardGroupActivityVO guardGroupActivityVO = guardGroupService.getGuardGroupActivity(groupId, guardianId);</b>
+<b class="fc">&nbsp;        return RestBean.success(guardGroupActivityVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param wardIds 被监护人ID列表
+&nbsp;     * @return 添加结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/guard-group/member/add&quot;)
+&nbsp;    @Operation(summary = &quot;添加监护组成员&quot;)
+&nbsp;    public RestBean&lt;String&gt; addGuardGroupMember(@RequestParam Integer groupId,
+&nbsp;                                                @RequestParam String wardIds,
+&nbsp;                                                HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer guardianId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;Integer&gt; wardIdList = Stream.of(wardIds.split(&quot;,&quot;))</b>
+<b class="fc">&nbsp;                .map(Integer::parseInt)</b>
+<b class="fc">&nbsp;                .toList();</b>
+<b class="fc">&nbsp;        String message = guardGroupService.addGuardGroupMember(groupId, guardianId, wardIdList);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 解散监护组
+&nbsp;     * @return 解散结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/guard-group/disband&quot;)
+&nbsp;    @Operation(summary = &quot;解散监护组&quot;)
+&nbsp;    public RestBean&lt;String&gt; disbandGuardGroup(@RequestParam Integer groupId) {
+<b class="fc">&nbsp;        String message = guardGroupService.deleteGuardGroup(groupId);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/guard-group/member/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除监护组成员&quot;)
+&nbsp;    public RestBean&lt;String&gt; deleteGuardGroupMember(@RequestParam Integer groupId,
+&nbsp;                                                   @RequestParam Integer wardId) {
+<b class="fc">&nbsp;        String message = guardGroupService.deleteGuardGroupMember(groupId, wardId);</b>
+<b class="fc">&nbsp;        if (message != null) {</b>
+<b class="fc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更改群组名称
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param groupName 群组名称
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/guard-group/set-name&quot;)
+&nbsp;    @Operation(summary = &quot;更改群组名称&quot;)
+&nbsp;    public RestBean&lt;String&gt; setGroupName(@RequestParam Integer groupId,
+&nbsp;                                         @RequestParam String groupName) {
+<b class="fc">&nbsp;        GuardGroup guardGroup = guardGroupService.getById(groupId);</b>
+<b class="fc">&nbsp;        guardGroup.setName(groupName);</b>
+<b class="fc">&nbsp;        guardGroupService.updateById(guardGroup);</b>
+<b class="fc">&nbsp;        return RestBean.success();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 17:02</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,290 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > GuardGroupServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: GuardGroupServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GuardGroupServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.2%
+  </span>
+  <span class="absValue">
+    (52/71)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GuardGroupServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.2%
+  </span>
+  <span class="absValue">
+    (52/71)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.*;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.GroupMemberActivityVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.GuardGroupActivityVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.WardActivityInfoVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.WardActivityVO;
+&nbsp;import com.triguard.backend.mapper.GuardGroupMapper;
+&nbsp;import com.triguard.backend.service.*;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.text.SimpleDateFormat;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 监护组相关服务实现类
+&nbsp; */
+&nbsp;@Service
+<b class="fc">&nbsp;public class GuardGroupServiceImpl extends ServiceImpl&lt;GuardGroupMapper, GuardGroup&gt; implements GuardGroupService {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    GuardGroupMemberService guardGroupMemberService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AccountService accountService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    GuardService guardService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodPressureService bloodPressureService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodSugarService bloodSugarService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodLipidsService bloodLipidsService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取监护组列表
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @return 监护组列表
+&nbsp;     */
+&nbsp;    public List&lt;GuardGroup&gt; getGuardGroupList(Integer guardianId) {
+<b class="fc">&nbsp;        List&lt;Integer&gt; groupIdList = guardGroupMemberService.getGroupIdList(guardianId);</b>
+<b class="fc">&nbsp;        if (groupIdList.isEmpty()) {</b>
+<b class="fc">&nbsp;            return List.of();</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .in(&quot;id&quot;, groupIdList)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 创建监护组
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param groupName 监护组名称
+&nbsp;     * @param wardIdList 被监护人ID列表
+&nbsp;     * @return 创建结果
+&nbsp;     */
+&nbsp;    public String createGuardGroup(Integer guardianId, String groupName, List&lt;Integer&gt; wardIdList) {
+<b class="fc">&nbsp;        GuardGroup guardGroup = new GuardGroup();</b>
+<b class="fc">&nbsp;        guardGroup.setName(groupName);</b>
+<b class="fc">&nbsp;        guardGroup.setCreatedBy(guardianId);</b>
+<b class="fc">&nbsp;        this.save(guardGroup);</b>
+<b class="fc">&nbsp;        return guardGroupMemberService.addMemberList(guardGroup.getId(), guardianId , wardIdList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param wardIdList 被监护人ID
+&nbsp;     * @return 添加结果
+&nbsp;     */
+&nbsp;    public String addGuardGroupMember(Integer groupId, Integer guardianId, List&lt;Integer&gt; wardIdList) {
+<b class="fc">&nbsp;        GuardGroup guardGroup = this.getById(groupId);</b>
+<b class="fc">&nbsp;        if (guardGroup == null) {</b>
+<b class="nc">&nbsp;            return &quot;监护组不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return guardGroupMemberService.addWardMemberList(groupId, guardianId, wardIdList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取监护组活动
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @return 监护组活动
+&nbsp;     */
+&nbsp;    public GuardGroupActivityVO getGuardGroupActivity(Integer groupId, Integer guardianId) {
+<b class="fc">&nbsp;        GuardGroupActivityVO guardGroupActivityVO = new GuardGroupActivityVO();</b>
+<b class="fc">&nbsp;        List&lt;GuardGroupMember&gt; memberList = guardGroupMemberService.getMemberList(groupId);</b>
+<b class="fc">&nbsp;        List&lt;WardActivityVO.WardInfo&gt; wardInfoList = memberList.stream()</b>
+<b class="fc">&nbsp;                .filter(member -&gt; member.getRole().equals(&quot;ward&quot;))</b>
+<b class="fc">&nbsp;                .map(member -&gt; {</b>
+<b class="fc">&nbsp;                    Account ward = accountService.getById(member.getAccountId());</b>
+<b class="fc">&nbsp;                    Guard guard = guardService.query()</b>
+<b class="fc">&nbsp;                            .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                            .eq(&quot;ward_id&quot;, ward.getId())</b>
+<b class="fc">&nbsp;                            .one();</b>
+<b class="fc">&nbsp;                    if (guard == null) {</b>
+<b class="fc">&nbsp;                        return null;</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    return new WardActivityVO.WardInfo(ward.getId(), ward.getEmail(), ward.getUsername(), guard.getWardNickname(), ward.getProfile() == null ? ConstUtils.DEFAULT_AVATAR : ward.getProfile());</b>
+&nbsp;                })
+<b class="fc">&nbsp;                .toList();</b>
+<b class="fc">&nbsp;        guardGroupActivityVO.setWardInfos(wardInfoList);</b>
+<b class="fc">&nbsp;        Date today = new Date();</b>
+<b class="fc">&nbsp;        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</b>
+<b class="fc">&nbsp;        String todayString = simpleDateFormat.format(today);</b>
+<b class="fc">&nbsp;        List&lt;GroupMemberActivityVO&gt; groupMemberActivityVOS = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (GuardGroupMember member : memberList) {</b>
+<b class="fc">&nbsp;            if (member.getRole().equals(&quot;guardian&quot;)) {</b>
+<b class="fc">&nbsp;                continue;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            Guard guard = guardService.query()</b>
+<b class="fc">&nbsp;                    .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                    .eq(&quot;ward_id&quot;, member.getAccountId())</b>
+<b class="fc">&nbsp;                    .one();</b>
+<b class="fc">&nbsp;            if (guard == null) {</b>
+<b class="fc">&nbsp;                continue;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            List&lt;BloodPressure&gt; bloodPressureList = bloodPressureService.getBloodPressure(member.getAccountId(), todayString);</b>
+<b class="nc">&nbsp;            List&lt;BloodSugar&gt; bloodSugarList = bloodSugarService.getBloodSugar(member.getAccountId(), todayString);</b>
+<b class="nc">&nbsp;            List&lt;BloodLipids&gt; bloodLipidsList = bloodLipidsService.getBloodLipids(member.getAccountId(), todayString);</b>
+<b class="nc">&nbsp;            for (BloodPressure bloodPressure : bloodPressureList) {</b>
+<b class="nc">&nbsp;                groupMemberActivityVOS.add(new GroupMemberActivityVO(bloodPressure.getTime(), guard.getWardNickname(), 0));</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            for (BloodSugar bloodSugar : bloodSugarList) {</b>
+<b class="nc">&nbsp;                groupMemberActivityVOS.add(new GroupMemberActivityVO(bloodSugar.getTime(), guard.getWardNickname(), 1));</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            for (BloodLipids bloodLipids : bloodLipidsList) {</b>
+<b class="nc">&nbsp;                groupMemberActivityVOS.add(new GroupMemberActivityVO(bloodLipids.getTime(), guard.getWardNickname(), 2));</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        if (!groupMemberActivityVOS.isEmpty()) {</b>
+<b class="nc">&nbsp;            groupMemberActivityVOS.sort(Comparator.comparing(GroupMemberActivityVO::getTime));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        guardGroupActivityVO.setActivities(groupMemberActivityVOS);</b>
+<b class="fc">&nbsp;        return guardGroupActivityVO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    public String deleteGuardGroupMember(Integer groupId, Integer wardId) {
+<b class="fc">&nbsp;        GuardGroup guardGroup = this.getById(groupId);</b>
+<b class="fc">&nbsp;        if (guardGroup == null) {</b>
+<b class="nc">&nbsp;            return &quot;监护组不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return guardGroupMemberService.deleteMember(groupId, wardId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护组
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    public String deleteGuardGroup(Integer groupId) {
+&nbsp;        try {
+<b class="fc">&nbsp;            this.removeById(groupId);</b>
+<b class="fc">&nbsp;            guardGroupMemberService.deleteByGroupId(groupId);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return &quot;删除失败&quot;;</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 01:15</div>
+</div>
+</body>
+</html>

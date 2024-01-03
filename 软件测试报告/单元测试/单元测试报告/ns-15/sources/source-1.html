@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodSugarFilteredVO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.entity.vo.response.BloodSugar</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodSugarFilteredVO (com.triguard.backend.entity.vo.response.BloodSugar)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodSugarFilteredVO</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BloodSugarFilteredVO$CountedData</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/58)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.entity.vo.response.BloodSugar;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.dto.BloodSugar;
+&nbsp;import lombok.Data;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于统计后血糖数据和统计数据的返回
+&nbsp; */
+<b class="nc">&nbsp;@Data</b>
+&nbsp;public class BloodSugarFilteredVO {
+<b class="nc">&nbsp;    List&lt;BloodSugar&gt; bloodSugarList;</b>
+<b class="nc">&nbsp;    List&lt;CountedData&gt; countedDataList;</b>
+&nbsp;
+<b class="nc">&nbsp;    public BloodSugarFilteredVO(List&lt;BloodSugar&gt; bloodSugarList) {</b>
+<b class="nc">&nbsp;        this.bloodSugarList = bloodSugarList;</b>
+<b class="nc">&nbsp;        this.countedDataList = List.of(countData(&quot;bs&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private CountedData countData(String name) {
+<b class="nc">&nbsp;        CountedData countedData = new CountedData();</b>
+<b class="nc">&nbsp;        countedData.setName(name);</b>
+<b class="nc">&nbsp;        for (BloodSugar bloodSugar : bloodSugarList) {</b>
+&nbsp;            // TODO: 与血压统计数据的代码重复，可以考虑抽象出来
+<b class="nc">&nbsp;            Float data = switch (name) {</b>
+<b class="nc">&nbsp;                case &quot;bs&quot; -&gt; bloodSugar.getBs();</b>
+<b class="nc">&nbsp;                default -&gt; null;</b>
+&nbsp;            };
+<b class="nc">&nbsp;            if (data != null) {</b>
+<b class="nc">&nbsp;                countedData.setCount(countedData.getCount() + 1);</b>
+&nbsp;            } else {
+&nbsp;                continue;
+&nbsp;            }
+<b class="nc">&nbsp;            if (countedData.getMin() == null || data &lt; countedData.getMin()) {</b>
+<b class="nc">&nbsp;                countedData.setMin(data);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (countedData.getMax() == null || data &gt; countedData.getMax()) {</b>
+<b class="nc">&nbsp;                countedData.setMax(data);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            countedData.setAvg(countedData.getAvg() + data);</b>
+<b class="nc">&nbsp;            switch (bloodSugar.getMeal()) {</b>
+&nbsp;                case 0:
+<b class="nc">&nbsp;                    if (data &lt; 3.9) {</b>
+<b class="nc">&nbsp;                        countedData.setLow(countedData.getLow() + 1);</b>
+<b class="nc">&nbsp;                    } else if (data &lt;= 5.6) {</b>
+<b class="nc">&nbsp;                        countedData.setMedium(countedData.getMedium() + 1);</b>
+<b class="nc">&nbsp;                    } else if (data &lt;= 7.0) {</b>
+<b class="nc">&nbsp;                        countedData.setHigh(countedData.getHigh() + 1);</b>
+&nbsp;                    } else {
+<b class="nc">&nbsp;                        countedData.setAbnormal(countedData.getAbnormal() + 1);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    break;</b>
+&nbsp;                case 1, 2:
+<b class="nc">&nbsp;                    if (data &lt; 4.4) {</b>
+<b class="nc">&nbsp;                        countedData.setLow(countedData.getLow() + 1);</b>
+<b class="nc">&nbsp;                    } else if (data &lt;= 7.9) {</b>
+<b class="nc">&nbsp;                        countedData.setMedium(countedData.getMedium() + 1);</b>
+<b class="nc">&nbsp;                    } else if (data &lt;= 11.0) {</b>
+<b class="nc">&nbsp;                        countedData.setHigh(countedData.getHigh() + 1);</b>
+&nbsp;                    } else {
+<b class="nc">&nbsp;                        countedData.setAbnormal(countedData.getAbnormal() + 1);</b>
+&nbsp;                    }
+&nbsp;                    break;
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        countedData.setAvg(countedData.getAvg() / countedData.getCount());</b>
+<b class="nc">&nbsp;        return countedData;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    @Data</b>
+&nbsp;    private static class CountedData {
+<b class="nc">&nbsp;        private String name;</b>
+<b class="nc">&nbsp;        private Float min;</b>
+<b class="nc">&nbsp;        private Float max;</b>
+<b class="nc">&nbsp;        private Float avg;</b>
+<b class="nc">&nbsp;        private Integer high;</b>
+<b class="nc">&nbsp;        private Integer medium;</b>
+<b class="nc">&nbsp;        private Integer low;</b>
+<b class="nc">&nbsp;        private Integer abnormal;</b>
+<b class="nc">&nbsp;        private Integer count;</b>
+&nbsp;
+<b class="nc">&nbsp;        public CountedData() {</b>
+<b class="nc">&nbsp;            this.name = null;</b>
+<b class="nc">&nbsp;            this.min = null;</b>
+<b class="nc">&nbsp;            this.max = null;</b>
+<b class="nc">&nbsp;            this.avg = 0.0f;</b>
+<b class="nc">&nbsp;            this.high = 0;</b>
+<b class="nc">&nbsp;            this.medium = 0;</b>
+<b class="nc">&nbsp;            this.low = 0;</b>
+<b class="nc">&nbsp;            this.abnormal = 0;</b>
+<b class="nc">&nbsp;            this.count = 0;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

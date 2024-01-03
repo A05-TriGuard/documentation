@@ -1,0 +1,367 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MomentController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: MomentController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MomentController</td>
+<td class="coverageStat">
+  <span class="percent">
+    7.1%
+  </span>
+  <span class="absValue">
+    (1/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.2%
+  </span>
+  <span class="absValue">
+    (1/46)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MomentController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">MomentController$$SpringCGLIB$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    7.1%
+  </span>
+  <span class="absValue">
+    (1/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.2%
+  </span>
+  <span class="absValue">
+    (1/46)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Account;
+&nbsp;import com.triguard.backend.entity.dto.Moment;
+&nbsp;import com.triguard.backend.entity.dto.MomentComment;
+&nbsp;import com.triguard.backend.entity.vo.response.Moment.MomentCommentCreateVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Moment.MomentInfoVO;
+&nbsp;import com.triguard.backend.service.AccountService;
+&nbsp;import com.triguard.backend.service.MomentService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 动态相关接口
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/moment&quot;)
+&nbsp;@Tag(name = &quot;动态相关接口&quot;)
+<b class="fc">&nbsp;public class MomentController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    MomentService momentService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AccountService accountService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据三高分类、话题分类、排序方式获取动态列表
+&nbsp;     *
+&nbsp;     * @param classification 三高分类
+&nbsp;     * @param category       话题分类
+&nbsp;     * @param filter         排序方式
+&nbsp;     * @param page           页码
+&nbsp;     * @param size           每页大小
+&nbsp;     * @param keyword        关键词
+&nbsp;     * @return 动态列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/list&quot;)
+&nbsp;    @Operation(summary = &quot;根据三高分类、话题分类、排序方式获取动态列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;MomentInfoVO&gt;&gt; getMomentList(@RequestParam(name = &quot;class&quot;) String classification,
+&nbsp;                                            @RequestParam String category,
+&nbsp;                                            @RequestParam String filter,
+&nbsp;                                            @RequestParam(defaultValue = &quot;1&quot;) Integer page,
+&nbsp;                                            @RequestParam(defaultValue = &quot;10&quot;) Integer size,
+&nbsp;                                            @RequestParam(required = false) String keyword,
+&nbsp;                                            HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        List&lt;Moment&gt; momentList = switch (filter) {</b>
+<b class="nc">&nbsp;            case &quot;最受欢迎&quot; -&gt; momentService.getMomentListByHot(classification, category, page, size, keyword);</b>
+&nbsp;            case &quot;我的帖子&quot; -&gt;
+<b class="nc">&nbsp;                    momentService.getMomentListByAccount(accountId, classification, category, page, size, keyword);</b>
+&nbsp;            case &quot;我的点赞&quot; -&gt;
+<b class="nc">&nbsp;                    momentService.getMomentListByLike(accountId, classification, category, page, size, keyword);</b>
+&nbsp;            case &quot;我的收藏&quot; -&gt;
+<b class="nc">&nbsp;                    momentService.getMomentListByFavorite(accountId, classification, category, page, size, keyword);</b>
+&nbsp;            case &quot;我的关注&quot; -&gt;
+<b class="nc">&nbsp;                    momentService.getMomentListByFollow(accountId, classification, category, page, size, keyword);</b>
+<b class="nc">&nbsp;            default -&gt; momentService.getMomentListByTime(classification, category, page, size, keyword);</b>
+&nbsp;        };
+<b class="nc">&nbsp;        List&lt;MomentInfoVO&gt; momentInfoVOS = momentList.stream().map(moment -&gt; {</b>
+<b class="nc">&nbsp;            MomentInfoVO momentInfoVO = new MomentInfoVO();</b>
+<b class="nc">&nbsp;            BeanUtils.copyProperties(moment, momentInfoVO);</b>
+<b class="nc">&nbsp;            Account account = accountService.getById(moment.getAccountId());</b>
+<b class="nc">&nbsp;            momentInfoVO.setUsername(account.getUsername());</b>
+<b class="nc">&nbsp;            momentInfoVO.setProfile(account.getProfile() == null ? ConstUtils.DEFAULT_AVATAR : account.getProfile());</b>
+<b class="nc">&nbsp;            momentInfoVO.setIsLike(momentService.isLike(accountId, moment.getId()));</b>
+<b class="nc">&nbsp;            momentInfoVO.setIsFavorite(momentService.isFavorite(accountId, moment.getId()));</b>
+<b class="nc">&nbsp;            momentInfoVO.setIsFollow(momentService.isFollow(accountId, moment.getAccountId()));</b>
+<b class="nc">&nbsp;            return momentInfoVO;</b>
+<b class="nc">&nbsp;        }).toList();</b>
+<b class="nc">&nbsp;        return RestBean.success(momentInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 点赞动态
+&nbsp;     *
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/like&quot;)
+&nbsp;    @Operation(summary = &quot;点赞动态&quot;)
+&nbsp;    public RestBean&lt;String&gt; likeMoment(@RequestParam Integer momentId,
+&nbsp;                                       HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.likeMoment(accountId, momentId) ? RestBean.success() : RestBean.failure(400, &quot;点赞失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 取消点赞动态
+&nbsp;     *
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/unlike&quot;)
+&nbsp;    @Operation(summary = &quot;取消点赞动态&quot;)
+&nbsp;    public RestBean&lt;String&gt; unlikeMoment(@RequestParam Integer momentId,
+&nbsp;                                         HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.unlikeMoment(accountId, momentId) ? RestBean.success() : RestBean.failure(400, &quot;取消点赞失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 收藏动态
+&nbsp;     *
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/favorite&quot;)
+&nbsp;    @Operation(summary = &quot;收藏动态&quot;)
+&nbsp;    public RestBean&lt;String&gt; favoriteMoment(@RequestParam Integer momentId,
+&nbsp;                                           HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.favoriteMoment(accountId, momentId) ? RestBean.success() : RestBean.failure(400, &quot;收藏失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 取消收藏动态
+&nbsp;     *
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/unfavorite&quot;)
+&nbsp;    @Operation(summary = &quot;取消收藏动态&quot;)
+&nbsp;    public RestBean&lt;String&gt; unfavoriteMoment(@RequestParam Integer momentId,
+&nbsp;                                             HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.unfavoriteMoment(accountId, momentId) ? RestBean.success() : RestBean.failure(400, &quot;取消收藏失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 关注动态发布者
+&nbsp;     *
+&nbsp;     * @param momentAccountId 动态发布者id
+&nbsp;     * @return 动态发布者id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/follow&quot;)
+&nbsp;    @Operation(summary = &quot;关注动态发布者&quot;)
+&nbsp;    public RestBean&lt;String&gt; followMomentAccount(@RequestParam Integer momentAccountId,
+&nbsp;                                                HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.followMomentAccount(accountId, momentAccountId) ? RestBean.success() : RestBean.failure(400, &quot;关注失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 取消关注动态发布者
+&nbsp;     *
+&nbsp;     * @param momentAccountId 动态发布者id
+&nbsp;     * @return 动态发布者id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/unfollow&quot;)
+&nbsp;    @Operation(summary = &quot;取消关注动态发布者&quot;)
+&nbsp;    public RestBean&lt;String&gt; unfollowMomentAccount(@RequestParam Integer momentAccountId,
+&nbsp;                                                  HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.unfollowMomentAccount(accountId, momentAccountId) ? RestBean.success() : RestBean.failure(400, &quot;取消关注失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 举报动态
+&nbsp;     *
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/report&quot;)
+&nbsp;    @Operation(summary = &quot;举报动态&quot;)
+&nbsp;    public RestBean&lt;String&gt; reportMoment(@RequestParam Integer momentId,
+&nbsp;                                         @RequestParam String reason,
+&nbsp;                                         HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.reportMoment(accountId, momentId, reason) ? RestBean.success() : RestBean.failure(400, &quot;举报失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发布动态
+&nbsp;     *
+&nbsp;     * @param content        动态内容
+&nbsp;     * @param classification 三高分类
+&nbsp;     * @param category       话题分类
+&nbsp;     * @param images         图片
+&nbsp;     * @param video          视频
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;发布动态&quot;)
+&nbsp;    public RestBean&lt;Moment&gt; createMoment(@RequestParam String content,
+&nbsp;                                         @RequestParam(name = &quot;class&quot;) String classification,
+&nbsp;                                         @RequestParam String category,
+&nbsp;                                         @RequestPart(required = false) List&lt;MultipartFile&gt; images,
+&nbsp;                                         @RequestPart(required = false) MultipartFile video,
+&nbsp;                                         HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return RestBean.success(momentService.createMoment(accountId, content, classification, category, images, video));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除动态
+&nbsp;     *
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 动态id
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除动态&quot;)
+&nbsp;    public RestBean&lt;String&gt; deleteMoment(@RequestParam Integer momentId,
+&nbsp;                                         HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return momentService.deleteMoment(accountId, momentId) ? RestBean.success() : RestBean.failure(400, &quot;删除失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 发布评论
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @param content 评论内容
+&nbsp;     * @return 评论id
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/comment&quot;)
+&nbsp;    @Operation(summary = &quot;发布评论&quot;)
+&nbsp;    public RestBean&lt;MomentCommentCreateVO&gt; commentMoment(@RequestParam Integer momentId,
+&nbsp;                                                         @RequestParam String content,
+&nbsp;                                                         @RequestParam(required = false) Integer quoteCommentId,
+&nbsp;                                                         HttpServletRequest request) {
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        MomentComment momentComment = momentService.commentMoment(accountId, momentId, content, quoteCommentId);</b>
+<b class="nc">&nbsp;        MomentCommentCreateVO momentCommentCreateVO = momentService.getCommentInfo(momentComment);</b>
+<b class="nc">&nbsp;        return RestBean.success(momentCommentCreateVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取评论列表
+&nbsp;     * @param momentId 动态id
+&nbsp;     * @return 评论信息
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/comment/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取评论列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;MomentCommentCreateVO&gt;&gt; getCommentList(@RequestParam Integer momentId) {
+<b class="nc">&nbsp;        List&lt;MomentComment&gt; momentCommentList = momentService.getCommentList(momentId);</b>
+<b class="nc">&nbsp;        List&lt;MomentCommentCreateVO&gt; momentCommentCreateVOList = momentCommentList.stream().map(momentComment -&gt; momentService.getCommentInfo(momentComment)).toList();</b>
+<b class="nc">&nbsp;        return RestBean.success(momentCommentCreateVOList);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 17:02</div>
+</div>
+</body>
+</html>

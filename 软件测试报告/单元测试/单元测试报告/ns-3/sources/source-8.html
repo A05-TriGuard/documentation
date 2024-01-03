@@ -1,0 +1,285 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > FoodController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: FoodController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FoodController</td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (10/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.6%
+  </span>
+  <span class="absValue">
+    (39/49)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FoodController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">FoodController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">FoodController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">FoodController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (10/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.6%
+  </span>
+  <span class="absValue">
+    (39/49)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Food;
+&nbsp;import com.triguard.backend.entity.dto.FoodFavorites;
+&nbsp;import com.triguard.backend.entity.vo.response.Food.FoodInfoVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Food.SimpleFoodInfoVO;
+&nbsp;import com.triguard.backend.service.FoodFavoritesService;
+&nbsp;import com.triguard.backend.service.FoodService;
+&nbsp;import com.triguard.backend.service.MedicineService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import com.triguard.backend.utils.HistoryUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于食物相关Controller包含用户的食物信息的查找，管理员可以进行增删改查
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/food&quot;)
+&nbsp;@Tag(name = &quot;食物相关接口&quot;)
+<b class="fc">&nbsp;public class FoodController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FoodService foodService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FoodFavoritesService foodFavoritesService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    HistoryUtils historyUtils;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据关键词搜索食物
+&nbsp;     * @param keyword 关键词
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    @Operation(summary = &quot;根据关键词搜索食物&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleFoodInfoVO&gt;&gt; searchFood(@RequestParam @NotNull String keyword,
+&nbsp;                                                       HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;Food&gt; foods = foodService.searchFood(keyword);</b>
+<b class="fc">&nbsp;        List&lt;SimpleFoodInfoVO&gt; simpleFoodInfoVOS = foods.stream().map(food -&gt; {</b>
+<b class="fc">&nbsp;            SimpleFoodInfoVO simpleFoodInfoVO = new SimpleFoodInfoVO();</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(food, simpleFoodInfoVO);</b>
+<b class="fc">&nbsp;            return simpleFoodInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        historyUtils.saveStringHistory(ConstUtils.SEARCH_FOOD_HISTORY + accountId, keyword);</b>
+<b class="fc">&nbsp;        return RestBean.success(simpleFoodInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前用户搜索食物的历史记录
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search-history&quot;)
+&nbsp;    @Operation(summary = &quot;获取当前用户搜索食物的历史记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;String&gt;&gt; getSearchHistory(HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        return RestBean.success(historyUtils.getStringHistory(ConstUtils.SEARCH_FOOD_HISTORY + accountId));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取食物信息
+&nbsp;     * @param id 食物id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/info&quot;)
+&nbsp;    @Operation(summary = &quot;获取食物信息&quot;)
+&nbsp;    public RestBean&lt;FoodInfoVO&gt; getFoodInfo(@RequestParam @NotNull Integer id,
+&nbsp;                                            HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        historyUtils.saveIntegerHistory(ConstUtils.GET_FOOD_INFO_HISTORY + accountId, id);</b>
+<b class="fc">&nbsp;        Food food = foodService.getById(id);</b>
+<b class="fc">&nbsp;        FoodInfoVO foodInfoVO = new FoodInfoVO();</b>
+<b class="fc">&nbsp;        BeanUtils.copyProperties(food, foodInfoVO);</b>
+<b class="fc">&nbsp;        foodInfoVO.setIsFavorite(foodFavoritesService.getFoodFavorites(accountId, id) != null);</b>
+<b class="fc">&nbsp;        return RestBean.success(foodInfoVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取食物信息历史记录
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/info-history&quot;)
+&nbsp;    @Operation(summary = &quot;获取当前用户查看食物详细信息的历史记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleFoodInfoVO&gt;&gt; getFoodInfoHistory(HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;Integer&gt; foodIds = historyUtils.getIntegerHistory(ConstUtils.GET_FOOD_INFO_HISTORY + accountId);</b>
+<b class="fc">&nbsp;        if (foodIds == null || foodIds.isEmpty()) {</b>
+<b class="fc">&nbsp;            return RestBean.success(new ArrayList&lt;&gt;());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;Food&gt; foods = foodService.listByIds(foodIds);</b>
+<b class="nc">&nbsp;        List&lt;SimpleFoodInfoVO&gt; simpleFoodInfoVOS = foods.stream()</b>
+<b class="nc">&nbsp;                .sorted(Comparator.comparingInt(m -&gt; foodIds.indexOf(m.getId())))</b>
+<b class="nc">&nbsp;                .map(food -&gt; {</b>
+<b class="nc">&nbsp;                    SimpleFoodInfoVO simpleFoodInfoVO = new SimpleFoodInfoVO();</b>
+<b class="nc">&nbsp;                    BeanUtils.copyProperties(food, simpleFoodInfoVO);</b>
+<b class="nc">&nbsp;                    return simpleFoodInfoVO;</b>
+<b class="nc">&nbsp;                }).toList();</b>
+<b class="nc">&nbsp;        return RestBean.success(simpleFoodInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加食物收藏
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/favorites/add&quot;)
+&nbsp;    @Operation(summary = &quot;收藏食物&quot;)
+&nbsp;    public RestBean&lt;FoodFavorites&gt; addFoodFavorites(@RequestParam @NotNull Integer foodId,
+&nbsp;                                                    HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        FoodFavorites foodFavorites = foodFavoritesService.addFoodFavorites(accountId, foodId);</b>
+<b class="fc">&nbsp;        if (foodFavorites != null) {</b>
+<b class="fc">&nbsp;            return RestBean.success(foodFavorites);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return RestBean.failure(400, &quot;添加失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除食物收藏
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/delete&quot;)
+&nbsp;    @Operation(summary = &quot;取消收藏食物&quot;)
+&nbsp;    public RestBean&lt;Void&gt; deleteFoodFavorites(@RequestParam @NotNull Integer foodId,
+&nbsp;                                              HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        boolean isSuccess = foodFavoritesService.deleteFoodFavorites(accountId, foodId);</b>
+<b class="fc">&nbsp;        return isSuccess ? RestBean.success() : RestBean.failure(400, &quot;删除失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取食物收藏列表
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取食物收藏列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleFoodInfoVO&gt;&gt; getFoodFavoritesList(HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;FoodFavorites&gt; foodFavorites = foodFavoritesService.getFoodFavorites(accountId);</b>
+<b class="fc">&nbsp;        List&lt;SimpleFoodInfoVO&gt; simpleFoodInfoVOS = new java.util.ArrayList&lt;&gt;(foodFavorites.stream().map(foodFavorite -&gt; {</b>
+<b class="fc">&nbsp;            SimpleFoodInfoVO simpleFoodInfoVO = new SimpleFoodInfoVO();</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(foodService.getById(foodFavorite.getFoodId()), simpleFoodInfoVO);</b>
+<b class="fc">&nbsp;            return simpleFoodInfoVO;</b>
+<b class="fc">&nbsp;        }).toList());</b>
+<b class="fc">&nbsp;        simpleFoodInfoVOS.sort((o1, o2) -&gt; o2.getId() - o1.getId());</b>
+<b class="fc">&nbsp;        return RestBean.success(simpleFoodInfoVOS);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

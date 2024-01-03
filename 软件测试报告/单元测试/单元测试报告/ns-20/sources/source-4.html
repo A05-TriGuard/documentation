@@ -1,0 +1,295 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > JwtUtils</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: JwtUtils (com.triguard.backend.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JwtUtils</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    54.5%
+  </span>
+  <span class="absValue">
+    (6/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    36.4%
+  </span>
+  <span class="absValue">
+    (20/55)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.utils;
+&nbsp;
+&nbsp;import com.auth0.jwt.JWT;
+&nbsp;import com.auth0.jwt.JWTVerifier;
+&nbsp;import com.auth0.jwt.algorithms.Algorithm;
+&nbsp;import com.auth0.jwt.exceptions.JWTVerificationException;
+&nbsp;import com.auth0.jwt.interfaces.Claim;
+&nbsp;import com.auth0.jwt.interfaces.DecodedJWT;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
+&nbsp;import org.springframework.security.core.GrantedAuthority;
+&nbsp;import org.springframework.security.core.userdetails.User;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.util.Calendar;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.UUID;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于处理Jwt令牌的工具类
+&nbsp; */
+&nbsp;@Component
+<b class="fc">&nbsp;public class JwtUtils {</b>
+&nbsp;
+&nbsp;    //用于给Jwt令牌签名校验的秘钥
+&nbsp;    @Value(&quot;${spring.security.jwt.key}&quot;)
+&nbsp;    private String key;
+&nbsp;    //令牌的过期时间，以小时为单位
+&nbsp;    @Value(&quot;${spring.security.jwt.expire}&quot;)
+&nbsp;    private int expire;
+&nbsp;    //为用户生成Jwt令牌的冷却时间，防止刷接口频繁登录生成令牌，以秒为单位
+&nbsp;    @Value(&quot;${spring.security.jwt.limit.base}&quot;)
+&nbsp;    private int limit_base;
+&nbsp;    //用户如果继续恶意刷令牌，更严厉的封禁时间
+&nbsp;    @Value(&quot;${spring.security.jwt.limit.upgrade}&quot;)
+&nbsp;    private int limit_upgrade;
+&nbsp;    //判定用户在冷却时间内，继续恶意刷令牌的次数
+&nbsp;    @Value(&quot;${spring.security.jwt.limit.frequency}&quot;)
+&nbsp;    private int limit_frequency;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    StringRedisTemplate template;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FlowUtils utils;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 让指定Jwt令牌失效
+&nbsp;     * @param headerToken 请求头中携带的令牌
+&nbsp;     * @return 是否操作成功
+&nbsp;     */
+&nbsp;    public boolean invalidateJwt(String headerToken){
+<b class="nc">&nbsp;        String token = this.convertToken(headerToken);</b>
+<b class="nc">&nbsp;        Algorithm algorithm = Algorithm.HMAC256(key);</b>
+<b class="nc">&nbsp;        JWTVerifier jwtVerifier = JWT.require(algorithm).build();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            DecodedJWT verify = jwtVerifier.verify(token);</b>
+<b class="nc">&nbsp;            return deleteToken(verify.getId(), verify.getExpiresAt());</b>
+<b class="nc">&nbsp;        } catch (JWTVerificationException e) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据配置快速计算过期时间
+&nbsp;     * @return 过期时间
+&nbsp;     */
+&nbsp;    public Date expireTime() {
+<b class="nc">&nbsp;        Calendar calendar = Calendar.getInstance();</b>
+<b class="nc">&nbsp;        calendar.add(Calendar.HOUR, expire);</b>
+<b class="nc">&nbsp;        return calendar.getTime();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据UserDetails生成对应的Jwt令牌
+&nbsp;     * @param user 用户信息
+&nbsp;     * @return 令牌
+&nbsp;     */
+&nbsp;    public String createJwt(UserDetails user, String username, int userId) {
+<b class="nc">&nbsp;        if(this.frequencyCheck(userId)) {</b>
+<b class="nc">&nbsp;            Algorithm algorithm = Algorithm.HMAC256(key);</b>
+<b class="nc">&nbsp;            Date expire = this.expireTime();</b>
+<b class="nc">&nbsp;            return JWT.create()</b>
+<b class="nc">&nbsp;                    .withJWTId(UUID.randomUUID().toString())</b>
+<b class="nc">&nbsp;                    .withClaim(&quot;id&quot;, userId)</b>
+<b class="nc">&nbsp;                    .withClaim(&quot;name&quot;, username)</b>
+<b class="nc">&nbsp;                    .withClaim(&quot;authorities&quot;, user.getAuthorities()</b>
+<b class="nc">&nbsp;                            .stream()</b>
+<b class="nc">&nbsp;                            .map(GrantedAuthority::getAuthority).toList())</b>
+<b class="nc">&nbsp;                    .withExpiresAt(expire)</b>
+<b class="nc">&nbsp;                    .withIssuedAt(new Date())</b>
+<b class="nc">&nbsp;                    .sign(algorithm);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 解析Jwt令牌
+&nbsp;     * @param headerToken 请求头中携带的令牌
+&nbsp;     * @return DecodedJWT
+&nbsp;     */
+&nbsp;    public DecodedJWT resolveJwt(String headerToken){
+<b class="fc">&nbsp;        String token = this.convertToken(headerToken);</b>
+<b class="fc">&nbsp;        if(token == null) return null;</b>
+<b class="fc">&nbsp;        Algorithm algorithm = Algorithm.HMAC256(key);</b>
+<b class="fc">&nbsp;        JWTVerifier jwtVerifier = JWT.require(algorithm).build();</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            DecodedJWT verify = jwtVerifier.verify(token);</b>
+<b class="fc">&nbsp;            if(this.isInvalidToken(verify.getId())) return null;</b>
+<b class="fc">&nbsp;            Map&lt;String, Claim&gt; claims = verify.getClaims();</b>
+<b class="fc">&nbsp;            return new Date().after(claims.get(&quot;exp&quot;).asDate()) ? null : verify;</b>
+<b class="nc">&nbsp;        } catch (JWTVerificationException e) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 将jwt对象中的内容封装为UserDetails
+&nbsp;     * @param jwt 已解析的Jwt对象
+&nbsp;     * @return UserDetails
+&nbsp;     */
+&nbsp;    public UserDetails toUser(DecodedJWT jwt) {
+<b class="fc">&nbsp;        Map&lt;String, Claim&gt; claims = jwt.getClaims();</b>
+<b class="fc">&nbsp;        return User</b>
+<b class="fc">&nbsp;                .withUsername(claims.get(&quot;name&quot;).asString())</b>
+<b class="fc">&nbsp;                .password(&quot;******&quot;)</b>
+<b class="fc">&nbsp;                .authorities(claims.get(&quot;authorities&quot;).asArray(String.class))</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 将jwt对象中的用户ID提取出来
+&nbsp;     * @param jwt 已解析的Jwt对象
+&nbsp;     * @return 用户ID
+&nbsp;     */
+&nbsp;    public Integer toId(DecodedJWT jwt) {
+<b class="fc">&nbsp;        Map&lt;String, Claim&gt; claims = jwt.getClaims();</b>
+<b class="fc">&nbsp;        return claims.get(&quot;id&quot;).asInt();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 频率检测，防止用户高频申请Jwt令牌，并且采用阶段封禁机制
+&nbsp;     * 如果已经提示无法登录的情况下用户还在刷，那么就封禁更长时间
+&nbsp;     * @param userId 用户ID
+&nbsp;     * @return 是否通过频率检测
+&nbsp;     */
+&nbsp;    private boolean frequencyCheck(int userId){
+<b class="nc">&nbsp;        String key = ConstUtils.JWT_FREQUENCY + userId;</b>
+<b class="nc">&nbsp;        return utils.limitOnceUpgradeCheck(key, limit_frequency, limit_base, limit_upgrade);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 校验并转换请求头中的Token令牌
+&nbsp;     * @param headerToken 请求头中的Token
+&nbsp;     * @return 转换后的令牌
+&nbsp;     */
+&nbsp;    private String convertToken(String headerToken){
+<b class="fc">&nbsp;        if(headerToken == null || !headerToken.startsWith(&quot;Bearer &quot;))</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="fc">&nbsp;        return headerToken.substring(7);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 将Token列入Redis黑名单中
+&nbsp;     * @param uuid 令牌ID
+&nbsp;     * @param time 过期时间
+&nbsp;     * @return 是否操作成功
+&nbsp;     */
+&nbsp;    private boolean deleteToken(String uuid, Date time){
+<b class="nc">&nbsp;        if(this.isInvalidToken(uuid))</b>
+<b class="nc">&nbsp;            return false;</b>
+<b class="nc">&nbsp;        Date now = new Date();</b>
+<b class="nc">&nbsp;        long expire = Math.max(time.getTime() - now.getTime(), 0);</b>
+<b class="nc">&nbsp;        template.opsForValue().set(ConstUtils.JWT_BLACK_LIST + uuid, &quot;&quot;, expire, TimeUnit.MILLISECONDS);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 验证Token是否被列入Redis黑名单
+&nbsp;     * @param uuid 令牌ID
+&nbsp;     * @return 是否操作成功
+&nbsp;     */
+&nbsp;    private boolean isInvalidToken(String uuid){
+<b class="fc">&nbsp;        return Boolean.TRUE.equals(template.hasKey(ConstUtils.JWT_BLACK_LIST + uuid));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

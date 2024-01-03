@@ -1,0 +1,276 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MealController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: MealController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MealController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.7%
+  </span>
+  <span class="absValue">
+    (44/46)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MealController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">MealController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">MealController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">MealController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.7%
+  </span>
+  <span class="absValue">
+    (44/46)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Food;
+&nbsp;import com.triguard.backend.entity.dto.Meal;
+&nbsp;import com.triguard.backend.entity.dto.MealGoal;
+&nbsp;import com.triguard.backend.entity.vo.request.Meal.MealCreateVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Meal.MealInfoVO;
+&nbsp;import com.triguard.backend.service.FoodService;
+&nbsp;import com.triguard.backend.service.MealGoalService;
+&nbsp;import com.triguard.backend.service.MealService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/meal&quot;)
+&nbsp;@Tag(name = &quot;饮食模块相关接口&quot;)
+<b class="fc">&nbsp;public class MealController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    MealService mealService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    MealGoalService mealGoalService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FoodService foodService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加饮食记录
+&nbsp;     * @param mealCreateVO 饮食记录VO
+&nbsp;     * @param request 请求
+&nbsp;     * @return 饮食记录
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;添加饮食记录&quot;)
+&nbsp;    public RestBean&lt;Meal&gt; createMeal(@RequestBody @Valid MealCreateVO mealCreateVO,
+&nbsp;                                     HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = mealCreateVO.getAccountId();</b>
+<b class="fc">&nbsp;        if (mealCreateVO.getAccountId() == null) {</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Meal meal = mealService.createMeal(accountId, mealCreateVO);</b>
+<b class="fc">&nbsp;        if (meal == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;添加饮食记录失败&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RestBean.success(meal);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除饮食记录
+&nbsp;     * @param id 饮食记录ID
+&nbsp;     * @param request 请求
+&nbsp;     * @return 饮食记录
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除饮食记录&quot;)
+&nbsp;    public RestBean&lt;Void&gt; deleteMeal(@RequestParam Integer id,
+&nbsp;                                     HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        Boolean isSuccess = mealService.deleteMeal(accountId, id);</b>
+<b class="fc">&nbsp;        return isSuccess ? RestBean.success() : RestBean.failure(400, &quot;删除饮食记录失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取饮食记录
+&nbsp;     * @param date 日期
+&nbsp;     * @param request 请求
+&nbsp;     * @return 饮食记录
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get&quot;)
+&nbsp;    @Operation(summary = &quot;获取饮食记录&quot;)
+&nbsp;    public RestBean&lt;MealInfoVO&gt; getMeal(@RequestParam(required = false) Integer accountId,
+&nbsp;                                        @RequestParam String date,
+&nbsp;                                        @RequestParam String category,
+&nbsp;                                        HttpServletRequest request) {
+<b class="fc">&nbsp;        if (accountId == null) {</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;Meal&gt; mealList = mealService.getMeals(accountId, date, category);</b>
+<b class="fc">&nbsp;        if (mealList == null) {</b>
+<b class="nc">&nbsp;            return RestBean.success();</b>
+&nbsp;        }
+<b class="fc">&nbsp;        MealInfoVO mealInfoVO = new MealInfoVO();</b>
+<b class="fc">&nbsp;        mealInfoVO.setMealList(mealList.stream().map(m -&gt; {</b>
+<b class="fc">&nbsp;            MealInfoVO.SimpleMealInfo simpleMealInfo = new MealInfoVO.SimpleMealInfo();</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(m, simpleMealInfo);</b>
+<b class="fc">&nbsp;            return simpleMealInfo;</b>
+<b class="fc">&nbsp;        }).toList());</b>
+<b class="fc">&nbsp;        List&lt;Food&gt; foodList = foodService.getByNames(mealList.stream().map(Meal::getFood).toList());</b>
+<b class="fc">&nbsp;        for (Meal meal : mealList) {</b>
+<b class="fc">&nbsp;            for (Food food : foodList) {</b>
+<b class="fc">&nbsp;                if (meal.getFood().equals(food.getName())) {</b>
+<b class="fc">&nbsp;                    mealInfoVO.setCalories(mealInfoVO.getCalories() + food.getCalories() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    mealInfoVO.setCarbohydrates(mealInfoVO.getCarbohydrates() + food.getCarbohydrates() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    mealInfoVO.setLipids(mealInfoVO.getLipids() + food.getLipids() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    mealInfoVO.setCholesterol(mealInfoVO.getCholesterol() + food.getCholesterol() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    mealInfoVO.setProteins(mealInfoVO.getProteins() + food.getProteins() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    mealInfoVO.setFiber(mealInfoVO.getFiber() + food.getFiber() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    mealInfoVO.setSodium(mealInfoVO.getSodium() + food.getSodium() * meal.getWeight() / 100);</b>
+<b class="fc">&nbsp;                    break;</b>
+&nbsp;                }
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return RestBean.success(mealInfoVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置饮食目标
+&nbsp;     * @param mealGoal 饮食目标
+&nbsp;     * @param request 请求
+&nbsp;     * @return 饮食目标
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/set-goal&quot;)
+&nbsp;    @Operation(summary = &quot;设置饮食目标&quot;)
+&nbsp;    public RestBean&lt;MealGoal&gt; setMealGoal(@RequestBody MealGoal mealGoal,
+&nbsp;                                      HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = mealGoal.getAccountId();</b>
+<b class="fc">&nbsp;        if (mealGoal.getAccountId() == null) {</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Boolean isSuccess = mealGoalService.setMealGoal(accountId, mealGoal);</b>
+<b class="fc">&nbsp;        return isSuccess ? RestBean.success() : RestBean.failure(400, &quot;设置饮食目标失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取饮食目标
+&nbsp;     * @param request 请求
+&nbsp;     * @return 饮食目标
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-goal&quot;)
+&nbsp;    @Operation(summary = &quot;获取饮食目标&quot;)
+&nbsp;    public RestBean&lt;MealGoal&gt; getMealGoal(@RequestParam(required = false) Integer accountId,
+&nbsp;                                          HttpServletRequest request) {
+<b class="fc">&nbsp;        if (accountId == null) {</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        MealGoal mealGoal = mealGoalService.query().eq(&quot;account_id&quot;, accountId).one();</b>
+<b class="fc">&nbsp;        return RestBean.success(mealGoal);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

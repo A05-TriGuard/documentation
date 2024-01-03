@@ -1,0 +1,170 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ErrorPageController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller.exception</a>
+</div>
+
+<h1>Coverage Summary for Class: ErrorPageController (com.triguard.backend.controller.exception)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ErrorPageController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (1/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller.exception;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
+&nbsp;import org.springframework.boot.web.error.ErrorAttributeOptions;
+&nbsp;import org.springframework.boot.web.servlet.error.ErrorAttributes;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * 专用用于处理错误页面的Controller
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping({&quot;${server.error.path:${error.path:/error}}&quot;})
+&nbsp;public class ErrorPageController extends AbstractErrorController {
+&nbsp;
+&nbsp;    public ErrorPageController(ErrorAttributes errorAttributes) {
+<b class="fc">&nbsp;        super(errorAttributes);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 所有错误在这里统一处理，自动解析状态码和原因
+&nbsp;     * @param request 请求
+&nbsp;     * @return 失败响应
+&nbsp;     */
+&nbsp;    @RequestMapping
+&nbsp;    public RestBean&lt;Void&gt; error(HttpServletRequest request) {
+<b class="nc">&nbsp;        HttpStatus status = this.getStatus(request);</b>
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; errorAttributes = this.getErrorAttributes(request, this.getAttributeOptions());</b>
+<b class="nc">&nbsp;        String message = this.convertErrorMessage(status)</b>
+<b class="nc">&nbsp;                .orElse(errorAttributes.get(&quot;message&quot;).toString());</b>
+<b class="nc">&nbsp;        return RestBean.failure(status.value(), message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 对于一些特殊的状态码，错误信息转换
+&nbsp;     * @param status 状态码
+&nbsp;     * @return 错误信息
+&nbsp;     */
+&nbsp;    private Optional&lt;String&gt; convertErrorMessage(HttpStatus status){
+<b class="nc">&nbsp;        String value = switch (status.value()) {</b>
+<b class="nc">&nbsp;            case 400 -&gt; &quot;请求参数有误&quot;;</b>
+<b class="nc">&nbsp;            case 404 -&gt; &quot;请求的接口不存在&quot;;</b>
+<b class="nc">&nbsp;            case 405 -&gt; &quot;请求方法错误&quot;;</b>
+<b class="nc">&nbsp;            case 500 -&gt; &quot;内部错误，请联系管理员&quot;;</b>
+<b class="nc">&nbsp;            default -&gt; null;</b>
+&nbsp;        };
+<b class="nc">&nbsp;        return Optional.ofNullable(value);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 错误属性获取选项，这里额外添加了错误消息和异常类型
+&nbsp;     * @return 选项
+&nbsp;     */
+&nbsp;    private ErrorAttributeOptions getAttributeOptions(){
+&nbsp;        return ErrorAttributeOptions
+<b class="nc">&nbsp;                .defaults()</b>
+<b class="nc">&nbsp;                .including(ErrorAttributeOptions.Include.MESSAGE,</b>
+&nbsp;                        ErrorAttributeOptions.Include.EXCEPTION);
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

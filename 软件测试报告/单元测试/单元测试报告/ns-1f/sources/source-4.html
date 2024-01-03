@@ -1,0 +1,254 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodLipidsServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodLipidsServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodLipidsServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (52/52)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BloodLipidsServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (52/52)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.BloodLipids;
+&nbsp;import com.triguard.backend.entity.dto.BloodPressure;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodLipids.BloodLipidsCreateVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodLipids.BloodLipidsFilterVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodLipids.BloodLipidsUpdateVO;
+&nbsp;import com.triguard.backend.mapper.BloodLipidsMapper;
+&nbsp;import com.triguard.backend.service.BloodLipidsService;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 血脂信息处理相关服务
+&nbsp; */
+&nbsp;@Service
+<b class="fc">&nbsp;public class BloodLipidsServiceImpl extends ServiceImpl&lt;BloodLipidsMapper, BloodLipids&gt; implements BloodLipidsService {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加血脂记录
+&nbsp;     * @param vo 血脂记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    public BloodLipids createBloodLipids(Integer accountId, BloodLipidsCreateVO vo) {
+<b class="fc">&nbsp;        BloodLipids bloodLipids = new BloodLipids();</b>
+<b class="fc">&nbsp;        BeanUtils.copyProperties(vo, bloodLipids);</b>
+<b class="fc">&nbsp;        bloodLipids.setAccountId(accountId);</b>
+<b class="fc">&nbsp;        bloodLipids.setCreateTime(new Date());</b>
+<b class="fc">&nbsp;        return this.save(bloodLipids) ? bloodLipids : null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除血脂记录
+&nbsp;     * @param id 血脂记录id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    public String deleteBloodLipids(Integer id) {
+<b class="fc">&nbsp;        return this.removeById(id) ? null : &quot;删除血脂记录失败&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 修改血脂记录
+&nbsp;     * @param vo 血脂记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    public String updateBloodLipids(BloodLipidsUpdateVO vo) {
+<b class="fc">&nbsp;        BloodLipids bloodLipids = new BloodLipids();</b>
+<b class="fc">&nbsp;        BeanUtils.copyProperties(vo, bloodLipids);</b>
+<b class="fc">&nbsp;        return this.updateById(bloodLipids) ? null : &quot;修改血脂记录失败&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血脂记录
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param date 日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    public List&lt;BloodLipids&gt; getBloodLipids(Integer accountId, String date) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .eq(&quot;date&quot;, date)</b>
+<b class="fc">&nbsp;                .orderByDesc(&quot;create_time&quot;)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血脂记录
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param startDate 开始日期
+&nbsp;     * @param endDate 结束日期
+&nbsp;     * @return 响应结果
+&nbsp;     * TODO: 血压血糖血脂的查询条件都是一样的，可以抽象出来
+&nbsp;     */
+&nbsp;    public List&lt;BloodLipids&gt; getBloodLipids(Integer accountId, String startDate, String endDate) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .between(&quot;date&quot;, startDate, endDate)</b>
+<b class="fc">&nbsp;                .orderByDesc(&quot;date&quot;)</b>
+<b class="fc">&nbsp;                .orderByDesc(&quot;time&quot;)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血脂记录
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param vo 血脂筛选条件表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    public List&lt;BloodLipids&gt; getBloodLipids(Integer accountId, BloodLipidsFilterVO vo) {
+<b class="fc">&nbsp;        QueryChainWrapper&lt;BloodLipids&gt; query = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .between(&quot;date&quot;, vo.getStartDate(), vo.getEndDate())</b>
+<b class="fc">&nbsp;                .between(&quot;time&quot;, vo.getStartTime(), vo.getEndTime())</b>
+<b class="fc">&nbsp;                .ge(&quot;tc&quot;, vo.getMinTc())</b>
+<b class="fc">&nbsp;                .le(&quot;tc&quot;, vo.getMaxTc())</b>
+<b class="fc">&nbsp;                .ge(&quot;tg&quot;, vo.getMinTg())</b>
+<b class="fc">&nbsp;                .le(&quot;tg&quot;, vo.getMaxTg())</b>
+<b class="fc">&nbsp;                .ge(&quot;hdl&quot;, vo.getMinHdl())</b>
+<b class="fc">&nbsp;                .le(&quot;hdl&quot;, vo.getMaxHdl())</b>
+<b class="fc">&nbsp;                .ge(&quot;ldl&quot;, vo.getMinLdl())</b>
+<b class="fc">&nbsp;                .le(&quot;ldl&quot;, vo.getMaxLdl());</b>
+<b class="fc">&nbsp;        if (vo.getFeeling() != null) {</b>
+<b class="fc">&nbsp;            query = applyFeelingFilter(query, vo.getFeeling());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (vo.getRemark() != null) {</b>
+<b class="fc">&nbsp;            query = applyRemarkFilter(query, vo.getRemark());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return query.orderByDesc(&quot;date&quot;)</b>
+<b class="fc">&nbsp;                .orderByDesc(&quot;time&quot;)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private QueryChainWrapper&lt;BloodLipids&gt; applyFeelingFilter(QueryChainWrapper&lt;BloodLipids&gt; query, String feeling) {
+<b class="fc">&nbsp;        if (feeling.charAt(0) == &#39;0&#39;) {</b>
+<b class="fc">&nbsp;            query = query.ne(&quot;feeling&quot;, 0);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (feeling.charAt(1) == &#39;0&#39;) {</b>
+<b class="fc">&nbsp;            query = query.ne(&quot;feeling&quot;, 1);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (feeling.charAt(2) == &#39;0&#39;) {</b>
+<b class="fc">&nbsp;            query = query.ne(&quot;feeling&quot;, 2);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return query;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private QueryChainWrapper&lt;BloodLipids&gt; applyRemarkFilter(QueryChainWrapper&lt;BloodLipids&gt; query, String remark) {
+<b class="fc">&nbsp;        if (remark.charAt(0) == &#39;0&#39;) {</b>
+<b class="fc">&nbsp;            query = query.isNotNull(&quot;remark&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (remark.charAt(1) == &#39;0&#39;) {</b>
+<b class="fc">&nbsp;            query = query.isNull(&quot;remark&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return query;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,258 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > GuardGroupMemberServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: GuardGroupMemberServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GuardGroupMemberServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.7%
+  </span>
+  <span class="absValue">
+    (59/63)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GuardGroupMemberServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.7%
+  </span>
+  <span class="absValue">
+    (59/63)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.Guard;
+&nbsp;import com.triguard.backend.entity.dto.GuardGroupMember;
+&nbsp;import com.triguard.backend.mapper.GuardGroupMemberMapper;
+&nbsp;import com.triguard.backend.service.AccountService;
+&nbsp;import com.triguard.backend.service.GuardGroupMemberService;
+&nbsp;import com.triguard.backend.service.GuardService;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 监护组成员相关服务实现类
+&nbsp; */
+&nbsp;@Service
+<b class="fc">&nbsp;public class GuardGroupMemberServiceImpl extends ServiceImpl&lt;GuardGroupMemberMapper, GuardGroupMember&gt; implements GuardGroupMemberService {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    GuardService guardService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取监护组ID列表
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @return 监护组ID列表
+&nbsp;     */
+&nbsp;    public List&lt;Integer&gt; getGroupIdList(Integer guardianId) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;role&quot;, &quot;guardian&quot;)</b>
+<b class="fc">&nbsp;                .list()</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(GuardGroupMember::getGroupId)</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param wardIdList 被监护人ID列表
+&nbsp;     * @return 添加结果
+&nbsp;     */
+&nbsp;    public String addMemberList(Integer groupId, Integer guardianId, List&lt;Integer&gt; wardIdList) {
+&nbsp;        try {
+<b class="fc">&nbsp;            GuardGroupMember guardianMember = new GuardGroupMember();</b>
+<b class="fc">&nbsp;            guardianMember.setGroupId(groupId);</b>
+<b class="fc">&nbsp;            guardianMember.setAccountId(guardianId);</b>
+<b class="fc">&nbsp;            guardianMember.setRole(&quot;guardian&quot;);</b>
+<b class="fc">&nbsp;            guardianMember.setCreatedAt(new Date());</b>
+<b class="fc">&nbsp;            Guard guard = guardService.query()</b>
+<b class="fc">&nbsp;                    .eq(&quot;ward_id&quot;, wardIdList.get(0))</b>
+<b class="fc">&nbsp;                    .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                    .one();</b>
+<b class="fc">&nbsp;            guardianMember.setNickname(guard.getGuardianNickname());</b>
+<b class="fc">&nbsp;            this.save(guardianMember);</b>
+<b class="fc">&nbsp;            for (Integer wardId : wardIdList) {</b>
+<b class="fc">&nbsp;                addWardMember(groupId, guardianId, wardId);</b>
+<b class="fc">&nbsp;            }</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return &quot;添加失败&quot;;</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param wardIdList 被监护人ID
+&nbsp;     * @return 添加结果
+&nbsp;     */
+&nbsp;    public String addWardMemberList(Integer groupId, Integer guardianId, List&lt;Integer&gt; wardIdList) {
+&nbsp;        try {
+<b class="fc">&nbsp;            for (Integer wardId : wardIdList) {</b>
+<b class="fc">&nbsp;                addWardMember(groupId, guardianId, wardId);</b>
+<b class="fc">&nbsp;            }</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return &quot;添加失败&quot;;</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void addWardMember(Integer groupId, Integer guardianId, Integer wardId) {
+<b class="fc">&nbsp;        GuardGroupMember wardMember = new GuardGroupMember();</b>
+<b class="fc">&nbsp;        wardMember.setGroupId(groupId);</b>
+<b class="fc">&nbsp;        wardMember.setAccountId(wardId);</b>
+<b class="fc">&nbsp;        wardMember.setRole(&quot;ward&quot;);</b>
+<b class="fc">&nbsp;        wardMember.setCreatedAt(new Date());</b>
+<b class="fc">&nbsp;        Guard guard = guardService.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        wardMember.setNickname(guard.getWardNickname());</b>
+<b class="fc">&nbsp;        this.save(wardMember);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取所有监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @return 监护组成员列表
+&nbsp;     */
+&nbsp;    public List&lt;GuardGroupMember&gt; getMemberList(Integer groupId) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;group_id&quot;, groupId)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护组成员
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    public String deleteMember(Integer groupId, Integer wardId) {
+&nbsp;        try {
+<b class="fc">&nbsp;            GuardGroupMember member = this.query()</b>
+<b class="fc">&nbsp;                    .eq(&quot;group_id&quot;, groupId)</b>
+<b class="fc">&nbsp;                    .eq(&quot;account_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                    .eq(&quot;role&quot;, &quot;ward&quot;)</b>
+<b class="fc">&nbsp;                    .one();</b>
+<b class="fc">&nbsp;            this.removeById(member.getId());</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            return &quot;删除失败&quot;;</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护组成员
+&nbsp;     *
+&nbsp;     * @param groupId 监护组ID
+&nbsp;     */
+&nbsp;    public void deleteByGroupId(Integer groupId) {
+<b class="fc">&nbsp;        List&lt;GuardGroupMember&gt; memberList = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;group_id&quot;, groupId)</b>
+<b class="fc">&nbsp;                .list();</b>
+<b class="fc">&nbsp;        for (GuardGroupMember member : memberList) {</b>
+<b class="fc">&nbsp;            this.removeById(member.getId());</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

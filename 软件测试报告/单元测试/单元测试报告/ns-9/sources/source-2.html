@@ -1,0 +1,166 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodLipidsFilterVO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.entity.vo.request.BloodLipids</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodLipidsFilterVO (com.triguard.backend.entity.vo.request.BloodLipids)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodLipidsFilterVO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (31/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.entity.vo.request.BloodLipids;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.BaseData;
+&nbsp;import jakarta.validation.constraints.Digits;
+&nbsp;import jakarta.validation.constraints.Pattern;
+&nbsp;import lombok.Data;
+&nbsp;import org.hibernate.validator.constraints.Length;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于获取筛选血脂信息的表单
+&nbsp; */
+<b class="fc">&nbsp;@Data</b>
+&nbsp;public class BloodLipidsFilterVO implements BaseData {
+<b class="fc">&nbsp;    Integer accountId;</b>
+&nbsp;    @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;)
+<b class="fc">&nbsp;    String startDate;</b>
+&nbsp;    @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;)
+<b class="fc">&nbsp;    String endDate;</b>
+&nbsp;    @Pattern(regexp = &quot;^\\d{2}:\\d{2}$&quot;)
+<b class="fc">&nbsp;    String startTime;</b>
+&nbsp;    @Pattern(regexp = &quot;^\\d{2}:\\d{2}$&quot;)
+<b class="fc">&nbsp;    String endTime;</b>
+&nbsp;
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float minTc;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float maxTc;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float minTg;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float maxTg;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float minHdl;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float maxHdl;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float minLdl;</b>
+&nbsp;    @Digits(integer = 3, fraction = 1)
+<b class="fc">&nbsp;    Float maxLdl;</b>
+&nbsp;
+&nbsp;    @Length(max = 3, min = 3)
+<b class="fc">&nbsp;    String feeling;</b>
+&nbsp;    @Length(max = 2, min = 2)
+<b class="fc">&nbsp;    String remark;</b>
+&nbsp;
+<b class="fc">&nbsp;    public BloodLipidsFilterVO() {</b>
+<b class="fc">&nbsp;        this.startDate = &quot;1970-01-01&quot;;</b>
+<b class="fc">&nbsp;        this.endDate = &quot;2100-01-01&quot;;</b>
+<b class="fc">&nbsp;        this.startTime = &quot;00:00&quot;;</b>
+<b class="fc">&nbsp;        this.endTime = &quot;23:59&quot;;</b>
+<b class="fc">&nbsp;        this.minTc = 0.0f;</b>
+<b class="fc">&nbsp;        this.maxTc = 999.9f;</b>
+<b class="fc">&nbsp;        this.minTg = 0.0f;</b>
+<b class="fc">&nbsp;        this.maxTg = 999.9f;</b>
+<b class="fc">&nbsp;        this.minHdl = 0.0f;</b>
+<b class="fc">&nbsp;        this.maxHdl = 999.9f;</b>
+<b class="fc">&nbsp;        this.minLdl = 0.0f;</b>
+<b class="fc">&nbsp;        this.maxLdl = 999.9f;</b>
+<b class="fc">&nbsp;        this.feeling = null;</b>
+<b class="fc">&nbsp;        this.remark = null;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

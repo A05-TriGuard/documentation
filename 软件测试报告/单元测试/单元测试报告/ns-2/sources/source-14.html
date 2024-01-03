@@ -1,0 +1,123 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MomentService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service</a>
+</div>
+
+<h1>Coverage Summary for Class: MomentService (com.triguard.backend.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">MomentService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.service.IService;
+&nbsp;import com.triguard.backend.entity.dto.Moment;
+&nbsp;import com.triguard.backend.entity.dto.MomentComment;
+&nbsp;import com.triguard.backend.entity.vo.response.Moment.MomentCommentCreateVO;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface MomentService extends IService&lt;Moment&gt; {
+&nbsp;    List&lt;Moment&gt; getMomentListByTime(String classification, String category, Integer page, Integer size, String keyword);
+&nbsp;
+&nbsp;    List&lt;Moment&gt; getMomentListByHot(String classification, String category, Integer page, Integer size, String keyword);
+&nbsp;
+&nbsp;    List&lt;Moment&gt; getMomentListByAccount(Integer accountId, String classification, String category, Integer page, Integer size, String keyword);
+&nbsp;
+&nbsp;    List&lt;Moment&gt; getMomentListByLike(Integer accountId, String classification, String category, Integer page, Integer size, String keyword);
+&nbsp;
+&nbsp;    List&lt;Moment&gt; getMomentListByFavorite(Integer accountId, String classification, String category, Integer page, Integer size, String keyword);
+&nbsp;
+&nbsp;    List&lt;Moment&gt; getMomentListByFollow(Integer accountId, String classification, String category, Integer page, Integer size, String keyword);
+&nbsp;
+&nbsp;    Boolean isLike(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    Boolean isFavorite(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    Boolean isFollow(Integer accountId, Integer momentAccountId);
+&nbsp;
+&nbsp;    Boolean likeMoment(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    Boolean unlikeMoment(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    Boolean favoriteMoment(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    Boolean unfavoriteMoment(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    Boolean followMomentAccount(Integer accountId, Integer momentAccountId);
+&nbsp;
+&nbsp;    Boolean unfollowMomentAccount(Integer accountId, Integer momentAccountId);
+&nbsp;
+&nbsp;    Boolean reportMoment(Integer accountId, Integer momentId, String reason);
+&nbsp;
+&nbsp;    Moment createMoment(Integer accountId, String content, String classification, String category, List&lt;MultipartFile&gt; images, MultipartFile video);
+&nbsp;
+&nbsp;    boolean deleteMoment(Integer accountId, Integer momentId);
+&nbsp;
+&nbsp;    MomentComment commentMoment(Integer accountId, Integer momentId, String content, Integer quoteCommentId);
+&nbsp;
+&nbsp;    MomentComment getCommentById(Integer commentId);
+&nbsp;
+&nbsp;    MomentCommentCreateVO getCommentInfo(MomentComment momentComment);
+&nbsp;
+&nbsp;    List&lt;MomentComment&gt; getCommentList(Integer momentId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 01:15</div>
+</div>
+</body>
+</html>

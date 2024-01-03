@@ -1,0 +1,377 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > AccountServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: AccountServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AccountServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (6/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    29.6%
+  </span>
+  <span class="absValue">
+    (24/81)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AccountServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (6/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    29.6%
+  </span>
+  <span class="absValue">
+    (24/81)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.alibaba.fastjson2.JSONObject;
+&nbsp;import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.Account;
+&nbsp;import com.triguard.backend.entity.vo.request.Authorization.EmailConfirmResetVO;
+&nbsp;import com.triguard.backend.entity.vo.request.Authorization.EmailRegisterVO;
+&nbsp;import com.triguard.backend.entity.vo.request.Authorization.EmailResetVO;
+&nbsp;import com.triguard.backend.mapper.AccountMapper;
+&nbsp;import com.triguard.backend.service.AccountService;
+&nbsp;import com.triguard.backend.service.FileService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import com.triguard.backend.utils.FlowUtils;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import org.springframework.amqp.core.AmqpTemplate;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
+&nbsp;import org.springframework.security.core.userdetails.User;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;import org.springframework.security.core.userdetails.UsernameNotFoundException;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Random;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;
+&nbsp;/**
+&nbsp; * 账户信息处理相关服务
+&nbsp; */
+&nbsp;@Service
+<b class="fc">&nbsp;public class AccountServiceImpl extends ServiceImpl&lt;AccountMapper, Account&gt; implements AccountService {</b>
+&nbsp;
+&nbsp;    //验证邮件发送冷却时间限制，秒为单位
+&nbsp;    @Value(&quot;${spring.web.verify.mail-limit}&quot;)
+&nbsp;    int verifyLimit;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AmqpTemplate rabbitTemplate;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    StringRedisTemplate stringRedisTemplate;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    PasswordEncoder passwordEncoder;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FlowUtils flow;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    FileService fileService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 从数据库中通过用户名或邮箱查找用户详细信息
+&nbsp;     * @param username 用户名
+&nbsp;     * @return 用户详细信息
+&nbsp;     * @throws UsernameNotFoundException 如果用户未找到则抛出此异常
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+<b class="fc">&nbsp;        Account account = this.findAccountByNameOrEmailOrPhone(username);</b>
+<b class="fc">&nbsp;        if(account == null)</b>
+<b class="fc">&nbsp;            throw new UsernameNotFoundException(&quot;用户名或密码错误&quot;);</b>
+<b class="fc">&nbsp;        return User</b>
+<b class="fc">&nbsp;                .withUsername(username)</b>
+<b class="fc">&nbsp;                .password(account.getPassword())</b>
+<b class="fc">&nbsp;                .roles(account.getRole())</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 生成邮箱验证码存入Redis中，并将邮件发送请求提交到消息队列等待发送
+&nbsp;     * @param type 类型
+&nbsp;     * @param email 邮件地址
+&nbsp;     * @param address 请求IP地址
+&nbsp;     * @return 操作结果，null表示正常，否则为错误原因
+&nbsp;     */
+&nbsp;    public String sendEmailVerificationCode(String type, String email, String address){
+<b class="nc">&nbsp;        synchronized (address.intern()) {</b>
+<b class="nc">&nbsp;            if(this.verifyLimit(address, ConstUtils.VERIFY_EMAIL_LIMIT))</b>
+<b class="nc">&nbsp;                return &quot;请求频繁，请稍后再试&quot;;</b>
+<b class="nc">&nbsp;            Random random = new Random();</b>
+<b class="nc">&nbsp;            int code = random.nextInt(899999) + 100000;</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; data = Map.of(&quot;type&quot;,type,&quot;email&quot;, email, &quot;code&quot;, code);</b>
+<b class="nc">&nbsp;            String jsonString = JSONObject.toJSONString(data);</b>
+<b class="nc">&nbsp;            rabbitTemplate.convertAndSend(ConstUtils.MQ_MAIL, jsonString);</b>
+<b class="nc">&nbsp;            stringRedisTemplate.opsForValue()</b>
+<b class="nc">&nbsp;                    .set(ConstUtils.VERIFY_EMAIL_DATA + email, String.valueOf(code), 3, TimeUnit.MINUTES);</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 生成手机验证码存入Redis中，并将短信发送请求提交到消息队列等待发送
+&nbsp;     * @param type 类型
+&nbsp;     * @param phone 手机号
+&nbsp;     * @param address 请求IP地址
+&nbsp;     * @return 操作结果，null表示正常，否则为错误原因
+&nbsp;     */
+&nbsp;    public String sendPhoneVerificationCode(String type, String phone, String address) {
+<b class="nc">&nbsp;        synchronized (address.intern()) {</b>
+<b class="nc">&nbsp;            if(this.verifyLimit(address, ConstUtils.VERIFY_PHONE_LIMIT))</b>
+<b class="nc">&nbsp;                return &quot;请求频繁，请稍后再试&quot;;</b>
+<b class="nc">&nbsp;            Random random = new Random();</b>
+<b class="nc">&nbsp;            int code = random.nextInt(899999) + 100000;</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; data = Map.of(&quot;type&quot;,type,&quot;phone&quot;, phone, &quot;code&quot;, code);</b>
+<b class="nc">&nbsp;            String jsonString = JSONObject.toJSONString(data);</b>
+<b class="nc">&nbsp;            rabbitTemplate.convertAndSend(ConstUtils.MQ_SMS, jsonString);</b>
+<b class="nc">&nbsp;            stringRedisTemplate.opsForValue()</b>
+<b class="nc">&nbsp;                    .set(ConstUtils.VERIFY_PHONE_DATA + phone, String.valueOf(code), 3, TimeUnit.MINUTES);</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 邮件验证码注册账号操作，需要检查验证码是否正确以及邮箱、用户名是否存在重名
+&nbsp;     * @param info 注册基本信息
+&nbsp;     * @return 操作结果，null表示正常，否则为错误原因
+&nbsp;     */
+&nbsp;    public String registerEmailAccount(EmailRegisterVO info){
+<b class="fc">&nbsp;        String email = info.getEmail();</b>
+<b class="fc">&nbsp;        String code = this.getEmailVerifyCode(email);</b>
+<b class="fc">&nbsp;        if(code == null) return &quot;请先获取验证码&quot;;</b>
+<b class="nc">&nbsp;        if(!code.equals(info.getCode())) return &quot;验证码错误，请重新输入&quot;;</b>
+<b class="nc">&nbsp;        if(this.existsAccountByEmail(email)) return &quot;该邮件地址已被注册&quot;;</b>
+<b class="nc">&nbsp;        String username = info.getUsername();</b>
+<b class="nc">&nbsp;        if(this.existsAccountByUsername(username)) return &quot;该用户名已被他人使用，请重新更换&quot;;</b>
+<b class="nc">&nbsp;        String password = passwordEncoder.encode(info.getPassword());</b>
+<b class="nc">&nbsp;        Account account = new Account(null, info.getUsername(),</b>
+&nbsp;                password, email, null, null, ConstUtils.ROLE_DEFAULT, new Date());
+<b class="nc">&nbsp;        if(!this.save(account)) {</b>
+<b class="nc">&nbsp;            return &quot;内部错误，注册失败&quot;;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            this.deleteEmailVerifyCode(email);</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 邮件验证码重置密码操作，需要检查验证码是否正确
+&nbsp;     * @param info 重置基本信息
+&nbsp;     * @return 操作结果，null表示正常，否则为错误原因
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String resetEmailAccountPassword(EmailResetVO info) {
+<b class="nc">&nbsp;        String verify = emailConfirmReset(new EmailConfirmResetVO(info.getEmail(), info.getCode()));</b>
+<b class="nc">&nbsp;        if(verify != null) return verify;</b>
+<b class="nc">&nbsp;        String email = info.getEmail();</b>
+<b class="nc">&nbsp;        String password = passwordEncoder.encode(info.getPassword());</b>
+<b class="nc">&nbsp;        boolean update = this.update().eq(&quot;email&quot;, email).set(&quot;password&quot;, password).update();</b>
+<b class="nc">&nbsp;        if(update) {</b>
+<b class="nc">&nbsp;            this.deleteEmailVerifyCode(email);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return update ? null : &quot;更新失败，请联系管理员&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 重置密码确认操作，验证验证码是否正确
+&nbsp;     * @param info 验证基本信息
+&nbsp;     * @return 操作结果，null表示正常，否则为错误原因
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String emailConfirmReset(EmailConfirmResetVO info) {
+<b class="nc">&nbsp;        String email = info.getEmail();</b>
+<b class="nc">&nbsp;        String code = this.getEmailVerifyCode(email);</b>
+<b class="nc">&nbsp;        if(code == null) return &quot;请先获取验证码&quot;;</b>
+<b class="nc">&nbsp;        if(!code.equals(info.getCode())) return &quot;验证码错误，请重新输入&quot;;</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 移除Redis中存储的邮件验证码
+&nbsp;     * @param email 电邮
+&nbsp;     */
+&nbsp;    private void deleteEmailVerifyCode(String email){
+<b class="nc">&nbsp;        String key = ConstUtils.VERIFY_EMAIL_DATA + email;</b>
+<b class="nc">&nbsp;        stringRedisTemplate.delete(key);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取Redis中存储的邮件验证码
+&nbsp;     * @param email 电邮
+&nbsp;     * @return 验证码
+&nbsp;     */
+&nbsp;    private String getEmailVerifyCode(String email){
+<b class="fc">&nbsp;        String key = ConstUtils.VERIFY_EMAIL_DATA + email;</b>
+<b class="fc">&nbsp;        return stringRedisTemplate.opsForValue().get(key);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 针对IP地址进行邮件验证码获取限流
+&nbsp;     * @param address 地址
+&nbsp;     * @return 是否通过验证
+&nbsp;     */
+&nbsp;    private boolean verifyLimit(String address, String type) {
+<b class="nc">&nbsp;        String key = type + address;</b>
+<b class="nc">&nbsp;        return !flow.limitOnceCheck(key, verifyLimit);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 通过用户名或邮件地址查找用户
+&nbsp;     * @param text 用户名或邮件
+&nbsp;     * @return 账户实体
+&nbsp;     */
+&nbsp;    public Account findAccountByNameOrEmailOrPhone(String text){
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;username&quot;, text).or()</b>
+<b class="fc">&nbsp;                .eq(&quot;email&quot;, text).or()</b>
+<b class="fc">&nbsp;                .eq(&quot;phone&quot;, text)</b>
+<b class="fc">&nbsp;                .one();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 查询指定邮箱的用户是否已经存在
+&nbsp;     * @param email 邮箱
+&nbsp;     * @return 是否存在
+&nbsp;     */
+&nbsp;    private boolean existsAccountByEmail(String email){
+<b class="nc">&nbsp;        return this.baseMapper.exists(Wrappers.&lt;Account&gt;query().eq(&quot;email&quot;, email));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 查询指定用户名的用户是否已经存在
+&nbsp;     * @param username 用户名
+&nbsp;     * @return 是否存在
+&nbsp;     */
+&nbsp;    private boolean existsAccountByUsername(String username){
+<b class="nc">&nbsp;        return this.baseMapper.exists(Wrappers.&lt;Account&gt;query().eq(&quot;username&quot;, username));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 查询指定手机号的用户是否已经存在
+&nbsp;     * @param phone 手机号
+&nbsp;     * @return 是否存在
+&nbsp;     */
+&nbsp;    private boolean existsAccountByPhone(String phone){
+<b class="nc">&nbsp;        return this.baseMapper.exists(Wrappers.&lt;Account&gt;query().eq(&quot;phone&quot;, phone));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置账户头像
+&nbsp;     * @param accountId 账户ID
+&nbsp;     * @param profile 头像文件
+&nbsp;     * @return 是否成功
+&nbsp;     */
+&nbsp;    public String setProfile(Integer accountId, MultipartFile profile) {
+&nbsp;        try {
+<b class="fc">&nbsp;            String profileUrl = fileService.uploadMultipartFile(profile);</b>
+<b class="fc">&nbsp;            Account account = this.getById(accountId);</b>
+<b class="fc">&nbsp;            account.setProfile(profileUrl);</b>
+<b class="fc">&nbsp;            if (this.updateById(account)) {</b>
+<b class="fc">&nbsp;                return profileUrl;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                return null;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

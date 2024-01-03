@@ -1,0 +1,171 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > CorsFilter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.filter</a>
+</div>
+
+<h1>Coverage Summary for Class: CorsFilter (com.triguard.backend.filter)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CorsFilter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.filter;
+&nbsp;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import jakarta.servlet.FilterChain;
+&nbsp;import jakarta.servlet.ServletException;
+&nbsp;import jakarta.servlet.http.HttpFilter;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.core.annotation.Order;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;
+&nbsp;/**
+&nbsp; * 跨域配置过滤器，仅处理跨域，添加跨域响应头
+&nbsp; */
+&nbsp;@Component
+&nbsp;@Order(ConstUtils.ORDER_CORS)
+<b class="fc">&nbsp;public class CorsFilter extends HttpFilter {</b>
+&nbsp;
+&nbsp;    @Value(&quot;${spring.web.cors.origin}&quot;)
+&nbsp;    String origin;
+&nbsp;
+&nbsp;    @Value(&quot;${spring.web.cors.credentials}&quot;)
+&nbsp;    boolean credentials;
+&nbsp;
+&nbsp;    @Value(&quot;${spring.web.cors.methods}&quot;)
+&nbsp;    String methods;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+<b class="fc">&nbsp;        this.addCorsHeader(request, response);</b>
+<b class="fc">&nbsp;        chain.doFilter(request, response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加所有跨域相关响应头
+&nbsp;     * @param request 请求
+&nbsp;     * @param response 响应
+&nbsp;     */
+&nbsp;    private void addCorsHeader(HttpServletRequest request, HttpServletResponse response) {
+<b class="fc">&nbsp;        response.addHeader(&quot;Access-Control-Allow-Origin&quot;, this.resolveOrigin(request));</b>
+<b class="fc">&nbsp;        response.addHeader(&quot;Access-Control-Allow-Methods&quot;, this.resolveMethod());</b>
+<b class="fc">&nbsp;        response.addHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;Authorization, Content-Type&quot;);</b>
+<b class="fc">&nbsp;        if(credentials) {</b>
+<b class="nc">&nbsp;            response.addHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 解析配置文件中的请求方法
+&nbsp;     * @return 解析得到的请求头值
+&nbsp;     */
+&nbsp;    private String resolveMethod(){
+<b class="fc">&nbsp;        return methods.equals(&quot;*&quot;) ? &quot;GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, PATCH&quot; : methods;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 解析配置文件中的请求原始站点
+&nbsp;     * @param request 请求
+&nbsp;     * @return 解析得到的请求头值
+&nbsp;     */
+&nbsp;    private String resolveOrigin(HttpServletRequest request){
+<b class="fc">&nbsp;        return origin.equals(&quot;*&quot;) ? request.getHeader(&quot;Origin&quot;) : origin;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

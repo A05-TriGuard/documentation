@@ -1,0 +1,128 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > EmailRegisterVO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.entity.vo.request.Authorization</a>
+</div>
+
+<h1>Coverage Summary for Class: EmailRegisterVO (com.triguard.backend.entity.vo.request.Authorization)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmailRegisterVO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.entity.vo.request.Authorization;
+&nbsp;
+&nbsp;import jakarta.validation.constraints.Email;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import jakarta.validation.constraints.Pattern;
+&nbsp;import lombok.Data;
+&nbsp;import org.hibernate.validator.constraints.Length;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用户注册表单信息
+&nbsp; */
+<b class="fc">&nbsp;@Data</b>
+&nbsp;public class EmailRegisterVO {
+&nbsp;    @NotNull
+&nbsp;    @Email
+<b class="fc">&nbsp;    String email;</b>
+&nbsp;    @Length(max = 6, min = 6)
+<b class="nc">&nbsp;    String code;</b>
+&nbsp;    @Pattern(regexp = &quot;^[a-zA-Z0-9\\u4e00-\\u9fa5]+$&quot;)
+&nbsp;    @Length(min = 1, max = 10)
+<b class="nc">&nbsp;    String username;</b>
+&nbsp;    @Length(min = 6, max = 20)
+<b class="nc">&nbsp;    String password;</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

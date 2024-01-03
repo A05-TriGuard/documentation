@@ -1,0 +1,244 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ExerciseServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: ExerciseServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ExerciseServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72.5%
+  </span>
+  <span class="absValue">
+    (37/51)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ExerciseServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72.5%
+  </span>
+  <span class="absValue">
+    (37/51)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.Exercise;
+&nbsp;import com.triguard.backend.entity.vo.request.Sports.ExerciseFilterVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Sports.ExerciseInfoVO;
+&nbsp;import com.triguard.backend.mapper.ExerciseMapper;
+&nbsp;import com.triguard.backend.service.ExerciseService;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.text.ParseException;
+&nbsp;import java.text.SimpleDateFormat;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class ExerciseServiceImpl extends ServiceImpl&lt;ExerciseMapper, Exercise&gt; implements ExerciseService {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取某日运动信息
+&nbsp;     *
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param date      日期
+&nbsp;     * @return 运动信息
+&nbsp;     */
+&nbsp;    public List&lt;Exercise&gt; getExerciseByDate(Integer accountId, String date) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .likeRight(&quot;start_time&quot;, date)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取某段时间运动信息
+&nbsp;     *
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @param startDate 开始日期
+&nbsp;     * @param endDate   结束日期
+&nbsp;     * @return 运动信息
+&nbsp;     */
+&nbsp;    public List&lt;Exercise&gt; getExerciseByDateRange(Integer accountId, String startDate, String endDate) {
+<b class="fc">&nbsp;        startDate += &quot; 00:00&quot;;</b>
+<b class="fc">&nbsp;        endDate += &quot; 23:59&quot;;</b>
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .between(&quot;start_time&quot;, startDate, endDate)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当日运动信息列表
+&nbsp;     *
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @return 运动信息列表
+&nbsp;     */
+&nbsp;    public List&lt;Exercise&gt; getExerciseList(Integer accountId) {
+<b class="fc">&nbsp;        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</b>
+<b class="fc">&nbsp;        String today = simpleDateFormat.format(System.currentTimeMillis());</b>
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .likeRight(&quot;start_time&quot;, today)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前运动信息
+&nbsp;     *
+&nbsp;     * @param accountId 用户id
+&nbsp;     * @return 运动信息
+&nbsp;     */
+&nbsp;    public Exercise getCurrentExercise(Integer accountId) {
+<b class="fc">&nbsp;        List&lt;Exercise&gt; exercises = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;account_id&quot;, accountId)</b>
+<b class="fc">&nbsp;                .orderByDesc(&quot;start_time&quot;)</b>
+<b class="fc">&nbsp;                .list();</b>
+<b class="fc">&nbsp;        return (exercises == null || exercises.isEmpty()) ? null : exercises.get(0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 过滤运动信息
+&nbsp;     *
+&nbsp;     * @param exerciseInfoVOS 运动信息列表
+&nbsp;     * @param vo              过滤条件
+&nbsp;     * @return 过滤后的运动信息列表
+&nbsp;     */
+&nbsp;    public List&lt;ExerciseInfoVO&gt; filterExercise(List&lt;ExerciseInfoVO&gt; exerciseInfoVOS, ExerciseFilterVO vo) {
+<b class="fc">&nbsp;        SimpleDateFormat dateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;);</b>
+<b class="fc">&nbsp;        SimpleDateFormat timeFormat = new SimpleDateFormat(&quot;HH:mm&quot;);</b>
+<b class="fc">&nbsp;        return exerciseInfoVOS.stream()</b>
+<b class="fc">&nbsp;                .filter(exerciseInfoVO -&gt; {</b>
+&nbsp;                    try {
+<b class="fc">&nbsp;                        if (timeFormat.format(dateFormat.parse(exerciseInfoVO.getStartTime())).compareTo(vo.getStartTime()) &lt; 0) {</b>
+<b class="fc">&nbsp;                            return false;</b>
+&nbsp;                        }
+<b class="fc">&nbsp;                        if (exerciseInfoVO.getEndTime() == null || timeFormat.format(dateFormat.parse(exerciseInfoVO.getEndTime())).compareTo(vo.getEndTime()) &gt; 0) {</b>
+<b class="nc">&nbsp;                            return false;</b>
+&nbsp;                        }
+<b class="fc">&nbsp;                        System.out.println(exerciseInfoVO.getDuration());</b>
+<b class="fc">&nbsp;                        if (exerciseInfoVO.getDuration() &lt; vo.getMinDuration()) {</b>
+<b class="fc">&nbsp;                            return false;</b>
+&nbsp;                        }
+<b class="fc">&nbsp;                        if (exerciseInfoVO.getDuration() &gt; vo.getMaxDuration()) {</b>
+<b class="nc">&nbsp;                            return false;</b>
+&nbsp;                        }
+<b class="fc">&nbsp;                        if (vo.getFeelings() != null) {</b>
+<b class="nc">&nbsp;                            if (vo.getFeelings().charAt(0) == &#39;0&#39; &amp;&amp; exerciseInfoVO.getFeelings() == 0) {</b>
+<b class="nc">&nbsp;                                return false;</b>
+&nbsp;                            }
+<b class="nc">&nbsp;                            if (vo.getFeelings().charAt(1) == &#39;0&#39; &amp;&amp; exerciseInfoVO.getFeelings() == 1) {</b>
+<b class="nc">&nbsp;                                return false;</b>
+&nbsp;                            }
+<b class="nc">&nbsp;                            if (vo.getFeelings().charAt(2) == &#39;0&#39; &amp;&amp; exerciseInfoVO.getFeelings() == 2) {</b>
+<b class="nc">&nbsp;                                return false;</b>
+&nbsp;                            }
+&nbsp;                        }
+<b class="fc">&nbsp;                        if (vo.getRemark() != null) {</b>
+<b class="nc">&nbsp;                            if (vo.getRemark().charAt(0) == &#39;0&#39; &amp;&amp; exerciseInfoVO.getRemark() == null) {</b>
+<b class="nc">&nbsp;                                return false;</b>
+&nbsp;                            }
+<b class="nc">&nbsp;                            if (vo.getRemark().charAt(1) == &#39;0&#39; &amp;&amp; exerciseInfoVO.getRemark() != null) {</b>
+<b class="nc">&nbsp;                                return false;</b>
+&nbsp;                            }
+&nbsp;                        }
+<b class="fc">&nbsp;                        return true;</b>
+<b class="nc">&nbsp;                    } catch (ParseException e) {</b>
+<b class="nc">&nbsp;                        return false;</b>
+&nbsp;                    }
+&nbsp;                })
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

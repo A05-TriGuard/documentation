@@ -1,0 +1,149 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > RestBean</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: RestBean (com.triguard.backend.entity)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RestBean</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.1%
+  </span>
+  <span class="absValue">
+    (4/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.1%
+  </span>
+  <span class="absValue">
+    (4/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.entity;
+&nbsp;
+&nbsp;import com.alibaba.fastjson2.JSONObject;
+&nbsp;import com.alibaba.fastjson2.JSONWriter;
+&nbsp;import org.slf4j.MDC;
+&nbsp;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * 响应实体类封装，Rest风格
+&nbsp; * @param code 状态码
+&nbsp; * @param data 响应数据
+&nbsp; * @param message 其他消息
+&nbsp; * @param &lt;T&gt; 响应数据类型
+&nbsp; */
+<b class="fc">&nbsp;public record RestBean&lt;T&gt; (int code, T data, String message) {</b>
+&nbsp;    public static &lt;T&gt; RestBean&lt;T&gt; success(T data){
+<b class="fc">&nbsp;        return new RestBean&lt;&gt;(200, data, &quot;请求成功&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static &lt;T&gt; RestBean&lt;T&gt; success(){
+<b class="fc">&nbsp;        return success(null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static &lt;T&gt; RestBean&lt;T&gt; forbidden(String message){
+<b class="nc">&nbsp;        return failure(403, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static &lt;T&gt; RestBean&lt;T&gt; unauthorized(String message){
+<b class="nc">&nbsp;        return failure(401, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static &lt;T&gt; RestBean&lt;T&gt; failure(int code, String message){
+<b class="fc">&nbsp;        return new RestBean&lt;&gt;(code, null, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 快速将当前实体转换为JSON字符串格式
+&nbsp;     * @return JSON字符串
+&nbsp;     */
+&nbsp;    public String asJsonString() {
+<b class="nc">&nbsp;        return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

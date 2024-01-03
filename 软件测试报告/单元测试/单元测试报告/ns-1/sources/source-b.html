@@ -1,0 +1,294 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > MedicineController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: MedicineController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MedicineController</td>
+<td class="coverageStat">
+  <span class="percent">
+    8.3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    1.9%
+  </span>
+  <span class="absValue">
+    (1/52)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MedicineController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">MedicineController$$SpringCGLIB$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    8.3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    1.9%
+  </span>
+  <span class="absValue">
+    (1/52)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Medicine;
+&nbsp;import com.triguard.backend.entity.dto.MedicineFavorites;
+&nbsp;import com.triguard.backend.entity.vo.response.Medicine.MedicineInfoVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Medicine.SimpleMedicineInfoVO;
+&nbsp;import com.triguard.backend.service.MedicineFavoritesService;
+&nbsp;import com.triguard.backend.service.MedicineService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import com.triguard.backend.utils.HistoryUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于药品相关Controller包含用户的药品信息的查找，管理员可以进行增删改查
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/medicine&quot;)
+&nbsp;@Tag(name = &quot;药品相关接口&quot;)
+<b class="fc">&nbsp;public class MedicineController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    MedicineService medicineService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    MedicineFavoritesService medicineFavoritesService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    HistoryUtils historyUtils;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 查找药品
+&nbsp;     * @param keyword 关键词
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    @Operation(summary = &quot;根据关键词搜索药品&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleMedicineInfoVO&gt;&gt; searchMedicine(@RequestParam @NotNull String keyword,
+&nbsp;                                                               HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        List&lt;Medicine&gt; medicines = medicineService.searchMedicine(keyword);</b>
+<b class="nc">&nbsp;        List&lt;SimpleMedicineInfoVO&gt; simpleMedicineInfoVOS = medicines.stream().map(medicine -&gt; {</b>
+<b class="nc">&nbsp;            SimpleMedicineInfoVO simpleMedicineInfoVO = new SimpleMedicineInfoVO();</b>
+<b class="nc">&nbsp;            BeanUtils.copyProperties(medicine, simpleMedicineInfoVO);</b>
+<b class="nc">&nbsp;            return simpleMedicineInfoVO;</b>
+<b class="nc">&nbsp;        }).toList();</b>
+<b class="nc">&nbsp;        historyUtils.saveStringHistory(ConstUtils.SEARCH_MEDICINE_HISTORY + accountId, keyword);</b>
+<b class="nc">&nbsp;        return RestBean.success(simpleMedicineInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前用户查找药品记录
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search-history&quot;)
+&nbsp;    @Operation(summary = &quot;获取当前用户查找药品记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;String&gt;&gt; getSearchHistory(HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        return RestBean.success(historyUtils.getStringHistory(ConstUtils.SEARCH_MEDICINE_HISTORY + accountId));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取药品信息
+&nbsp;     * @param id 药品id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/info&quot;)
+&nbsp;    @Operation(summary = &quot;获取药品信息&quot;)
+&nbsp;    public RestBean&lt;MedicineInfoVO&gt; getMedicineInfo(@RequestParam @NotNull Integer id,
+&nbsp;                                              HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        historyUtils.saveIntegerHistory(ConstUtils.GET_MEDICINE_INFO_HISTORY + accountId, id);</b>
+<b class="nc">&nbsp;        Medicine medicine = medicineService.getById(id);</b>
+<b class="nc">&nbsp;        MedicineInfoVO medicineInfoVO = new MedicineInfoVO();</b>
+<b class="nc">&nbsp;        BeanUtils.copyProperties(medicine, medicineInfoVO);</b>
+<b class="nc">&nbsp;        medicineInfoVO.setIsFavorite(medicineFavoritesService.getMedicineFavorites(accountId, id) != null);</b>
+<b class="nc">&nbsp;        return RestBean.success(medicineInfoVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取当前用户查看药品信息记录
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/info-history&quot;)
+&nbsp;    @Operation(summary = &quot;获取当前用户查看药品信息记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleMedicineInfoVO&gt;&gt; getGetMedicineInfoHistory(HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        List&lt;Integer&gt; medicineIds = historyUtils.getIntegerHistory(ConstUtils.GET_MEDICINE_INFO_HISTORY + accountId);</b>
+<b class="nc">&nbsp;        System.out.println(medicineIds);</b>
+<b class="nc">&nbsp;        if (medicineIds == null || medicineIds.isEmpty()) {</b>
+<b class="nc">&nbsp;            return RestBean.success(new java.util.ArrayList&lt;&gt;());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;Medicine&gt; medicines = medicineService.listByIds(medicineIds);</b>
+<b class="nc">&nbsp;        List&lt;SimpleMedicineInfoVO&gt; simpleMedicineInfoVOS = medicines.stream()</b>
+<b class="nc">&nbsp;                .sorted(Comparator.comparingInt(m -&gt; medicineIds.indexOf(m.getId())))</b>
+<b class="nc">&nbsp;                .map(medicine -&gt; {</b>
+<b class="nc">&nbsp;                    SimpleMedicineInfoVO simpleMedicineInfoVO = new SimpleMedicineInfoVO();</b>
+<b class="nc">&nbsp;                    BeanUtils.copyProperties(medicine, simpleMedicineInfoVO);</b>
+<b class="nc">&nbsp;                    return simpleMedicineInfoVO;</b>
+&nbsp;                })
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+<b class="nc">&nbsp;        return RestBean.success(simpleMedicineInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加药品收藏
+&nbsp;     * @param medicineId 药品id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/favorites/add&quot;)
+&nbsp;    @Operation(summary = &quot;添加药品收藏&quot;)
+&nbsp;    public RestBean&lt;MedicineFavorites&gt; addMedicineFavorites(@RequestParam @NotNull Integer medicineId,
+&nbsp;                                                            HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        MedicineFavorites medicineFavorites = medicineFavoritesService.addMedicineFavorites(accountId, medicineId);</b>
+<b class="nc">&nbsp;        if (medicineFavorites != null) {</b>
+<b class="nc">&nbsp;            return RestBean.success(medicineFavorites);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return RestBean.failure(400, &quot;添加失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除药品收藏
+&nbsp;     * @param medicineId 药品id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除药品收藏&quot;)
+&nbsp;    public RestBean&lt;MedicineFavorites&gt; deleteMedicineFavorites(@RequestParam @NotNull Integer medicineId,
+&nbsp;                                                               HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        boolean isSuccess = medicineFavoritesService.deleteMedicineFavorites(accountId, medicineId);</b>
+<b class="nc">&nbsp;        return isSuccess ? RestBean.success() : RestBean.failure(400, &quot;删除失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取药品收藏列表
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取药品收藏列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleMedicineInfoVO&gt;&gt; getMedicineFavoritesList(HttpServletRequest request){
+<b class="nc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="nc">&nbsp;        List&lt;MedicineFavorites&gt; medicineFavorites = medicineFavoritesService.getMedicineFavorites(accountId);</b>
+<b class="nc">&nbsp;        List&lt;SimpleMedicineInfoVO&gt; simpleMedicineInfoVOS = new java.util.ArrayList&lt;&gt;(medicineFavorites.stream().map(medicineFavorite -&gt; {</b>
+<b class="nc">&nbsp;            SimpleMedicineInfoVO simpleMedicineInfoVO = new SimpleMedicineInfoVO();</b>
+<b class="nc">&nbsp;            BeanUtils.copyProperties(medicineService.getById(medicineFavorite.getMedicineId()), simpleMedicineInfoVO);</b>
+<b class="nc">&nbsp;            return simpleMedicineInfoVO;</b>
+<b class="nc">&nbsp;        }).toList());</b>
+<b class="nc">&nbsp;        simpleMedicineInfoVOS.sort((o1, o2) -&gt; o2.getId() - o1.getId());</b>
+<b class="nc">&nbsp;        return RestBean.success(simpleMedicineInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // TODO: 2021/10/12 管理员操作
+&nbsp;    /**
+&nbsp;     * 添加药品信息
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;添加药品信息&quot;)
+&nbsp;    public RestBean&lt;Medicine&gt; createMedicine(@RequestBody Medicine medicine){
+<b class="nc">&nbsp;        medicineService.save(medicine);</b>
+<b class="nc">&nbsp;        return RestBean.success(medicine);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 17:02</div>
+</div>
+</body>
+</html>

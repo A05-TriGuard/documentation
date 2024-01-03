@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > AuthorizationController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthorizationController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthorizationController</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.2%
+  </span>
+  <span class="absValue">
+    (1/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AuthorizationController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">AuthorizationController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">AuthorizationController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">AuthorizationController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.2%
+  </span>
+  <span class="absValue">
+    (1/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.vo.request.Authorization.EmailConfirmResetVO;
+&nbsp;import com.triguard.backend.entity.vo.request.Authorization.EmailRegisterVO;
+&nbsp;import com.triguard.backend.entity.vo.request.Authorization.EmailResetVO;
+&nbsp;import com.triguard.backend.service.AccountService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import jakarta.validation.constraints.Email;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import jakarta.validation.constraints.Pattern;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.function.Supplier;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于验证相关Controller包含用户的注册、重置密码等操作
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/auth&quot;)
+&nbsp;@Tag(name = &quot;登录校验相关&quot;, description = &quot;包括用户登录、注册、验证码请求等操作。&quot;)
+<b class="fc">&nbsp;public class AuthorizationController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AccountService accountService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 请求邮件验证码
+&nbsp;     * @param email 请求邮件
+&nbsp;     * @param type 类型
+&nbsp;     * @param request 请求
+&nbsp;     * @return 是否请求成功
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/email-code&quot;)
+&nbsp;    @Operation(summary = &quot;请求邮件验证码&quot;)
+&nbsp;    public RestBean&lt;Void&gt; askVerifyCode(@RequestParam @NotNull @Email String email,
+&nbsp;                                        @RequestParam @NotNull @Pattern(regexp = &quot;(register|reset)&quot;)  String type,
+&nbsp;                                        HttpServletRequest request) {
+<b class="nc">&nbsp;        if (email == null || email.isEmpty())</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;邮箱不能为空&quot;);</b>
+<b class="nc">&nbsp;        return this.messageHandle(() -&gt;</b>
+<b class="nc">&nbsp;                accountService.sendEmailVerificationCode(type, email, request.getRemoteAddr()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 请求短信验证码
+&nbsp;     * @param phone 请求手机号
+&nbsp;     * @param type 类型
+&nbsp;     * @param request 请求
+&nbsp;     * @return 是否请求成功
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/phone-code&quot;)
+&nbsp;    @Operation(summary = &quot;请求短信验证码&quot;)
+&nbsp;    public RestBean&lt;Void&gt; askPhoneCode(@RequestParam @NotNull @Pattern(regexp = &quot;^1[3456789]\\d{9}$&quot;) String phone,
+&nbsp;                                       @RequestParam @NotNull @Pattern(regexp = &quot;(register|reset)&quot;) String type,
+&nbsp;                                       HttpServletRequest request){
+<b class="nc">&nbsp;        return this.messageHandle(() -&gt;</b>
+<b class="nc">&nbsp;                accountService.sendPhoneVerificationCode(type, String.valueOf(phone), request.getRemoteAddr()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 进行用户注册操作，需要先请求邮件验证码
+&nbsp;     * @param vo 注册信息
+&nbsp;     * @return 是否注册成功
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/email-register&quot;)
+&nbsp;    @Operation(summary = &quot;用户邮箱注册操作&quot;)
+&nbsp;    public RestBean&lt;Void&gt; register(@RequestBody @Valid EmailRegisterVO vo){
+<b class="nc">&nbsp;        return this.messageHandle(() -&gt;</b>
+<b class="nc">&nbsp;                accountService.registerEmailAccount(vo));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 执行密码重置确认，检查验证码是否正确
+&nbsp;     * @param vo 密码重置信息
+&nbsp;     * @return 是否操作成功
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/reset-confirm&quot;)
+&nbsp;    @Operation(summary = &quot;密码重置确认&quot;)
+&nbsp;    public RestBean&lt;Void&gt; resetConfirm(@RequestBody @Valid EmailConfirmResetVO vo){
+<b class="nc">&nbsp;        return this.messageHandle(() -&gt; accountService.emailConfirmReset(vo));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 执行密码重置操作
+&nbsp;     * @param vo 密码重置信息
+&nbsp;     * @return 是否操作成功
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/reset-password&quot;)
+&nbsp;    @Operation(summary = &quot;密码重置操作&quot;)
+&nbsp;    public RestBean&lt;Void&gt; resetPassword(@RequestBody @Valid EmailResetVO vo){
+<b class="nc">&nbsp;        return this.messageHandle(() -&gt;</b>
+<b class="nc">&nbsp;                accountService.resetEmailAccountPassword(vo));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 针对于返回值为String作为错误信息的方法进行统一处理
+&nbsp;     * @param action 具体操作
+&nbsp;     * @return 响应结果
+&nbsp;     * @param &lt;T&gt; 响应结果类型
+&nbsp;     */
+&nbsp;    private &lt;T&gt; RestBean&lt;T&gt; messageHandle(Supplier&lt;String&gt; action){
+<b class="nc">&nbsp;        String message = action.get();</b>
+<b class="nc">&nbsp;        if(message == null)</b>
+<b class="nc">&nbsp;            return RestBean.success();</b>
+&nbsp;        else
+<b class="nc">&nbsp;            return RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

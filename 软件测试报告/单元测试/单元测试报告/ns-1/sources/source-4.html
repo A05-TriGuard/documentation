@@ -1,0 +1,245 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodLipidsController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodLipidsController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodLipidsController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BloodLipidsController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">BloodLipidsController$$SpringCGLIB$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.BloodLipids;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodLipids.BloodLipidsCreateVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodLipids.BloodLipidsFilterVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodLipids.BloodLipidsUpdateVO;
+&nbsp;import com.triguard.backend.entity.vo.response.BloodLipids.BloodLipidsFilteredVO;
+&nbsp;import com.triguard.backend.service.BloodLipidsService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/blood-lipids&quot;)
+&nbsp;@Tag(name = &quot;血脂相关接口&quot;)
+<b class="fc">&nbsp;public class BloodLipidsController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodLipidsService bloodLipidsService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加血脂记录
+&nbsp;     * @param vo 血脂记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;添加血脂记录&quot;)
+&nbsp;    public RestBean&lt;BloodLipids&gt; recordBloodLipids(@RequestBody @Valid BloodLipidsCreateVO vo,
+&nbsp;                                                   HttpServletRequest request){
+&nbsp;        Integer accountId;
+<b class="fc">&nbsp;        if (vo.getAccountId() != null){</b>
+<b class="fc">&nbsp;            accountId = vo.getAccountId();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        BloodLipids bloodLipids = bloodLipidsService.createBloodLipids(accountId, vo);</b>
+<b class="fc">&nbsp;        return bloodLipids == null ? RestBean.failure(400, &quot;添加血脂记录失败&quot;) : RestBean.success(bloodLipids);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除血脂记录
+&nbsp;     * @param id 血脂记录id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除血脂记录&quot;)
+&nbsp;    public RestBean&lt;Void&gt; deleteBloodLipids(@RequestParam Integer id){
+<b class="fc">&nbsp;        String message = bloodLipidsService.deleteBloodLipids(id);</b>
+<b class="fc">&nbsp;        return message == null ? RestBean.success() : RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 更新血脂记录
+&nbsp;     * @param vo 血脂记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/update&quot;)
+&nbsp;    @Operation(summary = &quot;更新血脂记录&quot;)
+&nbsp;    public RestBean&lt;BloodLipids&gt; updateBloodLipids(@RequestBody @Valid BloodLipidsUpdateVO vo){
+<b class="fc">&nbsp;        String message = bloodLipidsService.updateBloodLipids(vo);</b>
+<b class="fc">&nbsp;        return message == null ? RestBean.success() : RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据日期获取血脂记录
+&nbsp;     * @param date 日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-by-date&quot;)
+&nbsp;    @Operation(summary = &quot;获取血脂记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;BloodLipids&gt;&gt; getBloodLipidsByDate(@RequestParam(required = false) Integer accountId,
+&nbsp;                                                            @RequestParam String date,
+&nbsp;                                                            HttpServletRequest request){
+<b class="fc">&nbsp;        if (accountId == null){</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodLipids&gt; bloodLipids = bloodLipidsService.getBloodLipids(accountId, date);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodLipids);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据日期范围获取血脂记录
+&nbsp;     * @param startDate 开始日期
+&nbsp;     * @param endDate 结束日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-by-date-range&quot;)
+&nbsp;    @Operation(summary = &quot;获取血脂记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;BloodLipids&gt;&gt; getBloodLipidsByDateRange(@RequestParam(required = false) Integer accountId,
+&nbsp;                                                                 @RequestParam String startDate,
+&nbsp;                                                                 @RequestParam String endDate,
+&nbsp;                                                                 HttpServletRequest request){
+<b class="fc">&nbsp;        if (accountId == null){</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodLipids&gt; bloodLipids = bloodLipidsService.getBloodLipids(accountId, startDate, endDate);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodLipids);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据筛选条件获取血脂记录及统计数据
+&nbsp;     * @param vo 数据筛选表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/get-by-filter&quot;)
+&nbsp;    @Operation(summary = &quot;根据筛选条件获取血脂记录及统计数据&quot;)
+&nbsp;    public RestBean&lt;BloodLipidsFilteredVO&gt; getBloodLipidsByFilter(@RequestBody @Valid BloodLipidsFilterVO vo,
+&nbsp;                                                                  HttpServletRequest request){
+&nbsp;        Integer accountId;
+<b class="fc">&nbsp;        if (vo.getAccountId() != null){</b>
+<b class="fc">&nbsp;            accountId = vo.getAccountId();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodLipids&gt; bloodLipids = bloodLipidsService.getBloodLipids(accountId, vo);</b>
+<b class="fc">&nbsp;        BloodLipidsFilteredVO bloodLipidsFilteredVO = new BloodLipidsFilteredVO(bloodLipids);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodLipidsFilteredVO);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 17:02</div>
+</div>
+</body>
+</html>

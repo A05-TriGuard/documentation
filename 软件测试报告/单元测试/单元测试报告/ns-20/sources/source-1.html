@@ -1,0 +1,148 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ConstUtils</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: ConstUtils (com.triguard.backend.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConstUtils</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.utils;
+&nbsp;
+&nbsp;/**
+&nbsp; * 一些常量字符串整合
+&nbsp; */
+<b class="nc">&nbsp;public final class ConstUtils {</b>
+&nbsp;    //JWT令牌
+&nbsp;    public final static String JWT_BLACK_LIST = &quot;jwt:blacklist:&quot;;
+&nbsp;    public final static String JWT_FREQUENCY = &quot;jwt:frequency:&quot;;
+&nbsp;    //请求频率限制
+&nbsp;    public final static String FLOW_LIMIT_COUNTER = &quot;flow:counter:&quot;;
+&nbsp;    public final static String FLOW_LIMIT_BLOCK = &quot;flow:block:&quot;;
+&nbsp;    //邮件验证码
+&nbsp;    public final static String VERIFY_EMAIL_LIMIT = &quot;verify:email:limit:&quot;;
+&nbsp;    public final static String VERIFY_EMAIL_DATA = &quot;verify:email:data:&quot;;
+&nbsp;    //短信验证码
+&nbsp;    public final static String VERIFY_PHONE_LIMIT = &quot;verify:phone:limit:&quot;;
+&nbsp;    public final static String VERIFY_PHONE_DATA = &quot;verify:phone:data:&quot;;
+&nbsp;    //过滤器优先级
+&nbsp;    public final static int ORDER_FLOW_LIMIT = -101;
+&nbsp;    public final static int ORDER_CORS = -102;
+&nbsp;    //请求自定义属性
+&nbsp;    public final static String ATTR_USER_ID = &quot;userId&quot;;
+&nbsp;    //消息队列
+&nbsp;    public final static String MQ_MAIL = &quot;mail&quot;;
+&nbsp;    public final static String MQ_SMS = &quot;sms&quot;;
+&nbsp;    //用户角色
+&nbsp;    public final static String ROLE_DEFAULT = &quot;user&quot;;
+&nbsp;    public static final String ROLE_ADMIN = &quot;admin&quot;;
+&nbsp;    //药品搜索历史
+&nbsp;    public final static String SEARCH_MEDICINE_HISTORY = &quot;search:medicine:history:&quot;;
+&nbsp;    //药品信息获取历史
+&nbsp;    public final static String GET_MEDICINE_INFO_HISTORY = &quot;get:medicine:info:history:&quot;;
+&nbsp;    //食物搜索历史
+&nbsp;    public final static String SEARCH_FOOD_HISTORY = &quot;search:food:history:&quot;;
+&nbsp;    //食物信息获取历史
+&nbsp;    public final static String GET_FOOD_INFO_HISTORY = &quot;get:food:info:history:&quot;;
+&nbsp;    // 运动信息
+&nbsp;    public static final String REDIS_KEY_EXERCISE = &quot;exercise:&quot;;
+&nbsp;    // 默认头像
+&nbsp;    public static final String DEFAULT_AVATAR = &quot;default_avatar.png&quot;;
+&nbsp;    public static final String TEST_JWT_TOKEN = &quot;Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiYWRtaW4xIiwiaWQiOjIsImV4cCI6MTcwNDM4OTgwMywiaWF0IjoxNzA0MTMwNjAzLCJqdGkiOiI2ODc4MWUxMy00YjUxLTRiZWYtYjdjMC0zYmRjNWU2MGQzNjAiLCJhdXRob3JpdGllcyI6WyJST0xFX3VzZXIiXX0.00uCztvNsNJw8mFzhNRaDh_6dZ01nYfTL4U7l2bI14I&quot;;
+&nbsp;    public static final String TEST_ADMIN_JWT_TOKEN = &quot;Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiYWRtaW4iLCJpZCI6MywiZXhwIjoxNzA0NDY4NDAxLCJpYXQiOjE3MDQyMDkyMDEsImp0aSI6ImRiZDk4MGU3LTE0ZTktNGI5ZC1hOTJjLWIzZjc5YjBlYWU4YyIsImF1dGhvcml0aWVzIjpbIlJPTEVfYWRtaW4iXX0.5CFNvmUykbxUmtr3PYsy1lQBxx12YZvVBvoiO24sHvA&quot;;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

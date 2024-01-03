@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BodyIndexController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: BodyIndexController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BodyIndexController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BodyIndexController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">BodyIndexController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">BodyIndexController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">BodyIndexController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.BodyIndex;
+&nbsp;import com.triguard.backend.entity.vo.request.BodyIndex.BodyIndexSetVO;
+&nbsp;import com.triguard.backend.service.BodyIndexService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/body-index&quot;)
+&nbsp;@Tag(name = &quot;身体指标相关接口&quot;)
+<b class="fc">&nbsp;public class BodyIndexController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BodyIndexService bodyIndexService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置身体指标
+&nbsp;     * @param bodyIndexSetVO 身体指标VO
+&nbsp;     * @param request 请求
+&nbsp;     * @return 身体指标
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/set&quot;)
+&nbsp;    @Operation(summary = &quot;设置身体指标&quot;)
+&nbsp;    public RestBean&lt;BodyIndex&gt; setBodyIndex(@RequestBody @Valid BodyIndexSetVO bodyIndexSetVO,
+&nbsp;                                            HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        BodyIndex bodyIndex = bodyIndexService.setBodyIndex(accountId, bodyIndexSetVO);</b>
+<b class="fc">&nbsp;        if (bodyIndex == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;设置失败&quot;);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return RestBean.success(bodyIndex);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取身体指标
+&nbsp;     * @param request 请求
+&nbsp;     * @return 身体指标
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get&quot;)
+&nbsp;    @Operation(summary = &quot;获取身体指标&quot;)
+&nbsp;    public RestBean&lt;BodyIndex&gt; getBodyIndex(HttpServletRequest request) {
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        BodyIndex bodyIndex = bodyIndexService.query().eq(&quot;account_id&quot;, accountId).one();</b>
+<b class="fc">&nbsp;        if (bodyIndex == null) {</b>
+<b class="nc">&nbsp;            return RestBean.success();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return RestBean.success(bodyIndex);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

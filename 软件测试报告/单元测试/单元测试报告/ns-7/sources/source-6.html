@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodSugar</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.entity.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodSugar (com.triguard.backend.entity.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodSugar</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.7%
+  </span>
+  <span class="absValue">
+    (11/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.2%
+  </span>
+  <span class="absValue">
+    (20/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.entity.dto;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.annotation.IdType;
+&nbsp;import com.baomidou.mybatisplus.annotation.TableId;
+&nbsp;import com.baomidou.mybatisplus.annotation.TableName;
+&nbsp;import com.triguard.backend.entity.BaseData;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.Data;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;/**
+&nbsp; * 数据库中的血糖信息
+&nbsp; */
+<b class="fc">&nbsp;@Data</b>
+&nbsp;@TableName(&quot;db_blood_sugar&quot;)
+<b class="nc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class BloodSugar implements BaseData {
+&nbsp;    @TableId(type = IdType.AUTO)
+<b class="fc">&nbsp;    Integer id;</b>
+<b class="fc">&nbsp;    Integer accountId;</b>
+<b class="fc">&nbsp;    Float bs; // 血糖值</b>
+<b class="fc">&nbsp;    Integer meal;</b>
+<b class="fc">&nbsp;    Integer feeling;</b>
+<b class="fc">&nbsp;    String remark;</b>
+<b class="fc">&nbsp;    String date;</b>
+<b class="fc">&nbsp;    String time;</b>
+<b class="fc">&nbsp;    Date createTime;</b>
+&nbsp;
+<b class="fc">&nbsp;    public BloodSugar() {</b>
+<b class="fc">&nbsp;        this.id = null;</b>
+<b class="fc">&nbsp;        this.accountId = null;</b>
+<b class="fc">&nbsp;        this.bs = null;</b>
+<b class="fc">&nbsp;        this.meal = null;</b>
+<b class="fc">&nbsp;        this.feeling = null;</b>
+<b class="fc">&nbsp;        this.remark = null;</b>
+<b class="fc">&nbsp;        this.date = null;</b>
+<b class="fc">&nbsp;        this.time = null;</b>
+<b class="fc">&nbsp;        this.createTime = null;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

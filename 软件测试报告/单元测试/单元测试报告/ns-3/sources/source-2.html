@@ -1,0 +1,291 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > ArticleController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ArticleController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ArticleController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.4%
+  </span>
+  <span class="absValue">
+    (51/54)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ArticleController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">ArticleController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">ArticleController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">ArticleController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.4%
+  </span>
+  <span class="absValue">
+    (51/54)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.Article;
+&nbsp;import com.triguard.backend.entity.dto.ArticleFavorites;
+&nbsp;import com.triguard.backend.entity.vo.response.Article.ArticleInfoVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Article.SimpleArticleInfoVO;
+&nbsp;import com.triguard.backend.service.ArticleFavoritesService;
+&nbsp;import com.triguard.backend.service.ArticleService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.beans.BeanUtils;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/article&quot;)
+&nbsp;@Tag(name = &quot;疾病预防和科普文章相关接口&quot;)
+<b class="fc">&nbsp;public class ArticleController {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    ArticleService articleService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    ArticleFavoritesService articleFavoritesService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 分页获取疾病预防文章列表
+&nbsp;     * @param page 页数
+&nbsp;     * @param size 每页大小
+&nbsp;     * @return 疾病预防文章列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/disease/list&quot;)
+&nbsp;    @Operation(summary = &quot;分页获取疾病预防文章列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleArticleInfoVO&gt;&gt; getDiseaseArticle(@RequestParam(defaultValue = &quot;1&quot;) Integer page,
+&nbsp;                                                                 @RequestParam(defaultValue = &quot;10&quot;) Integer size){
+<b class="fc">&nbsp;        List&lt;Article&gt; articles = articleService.getDiseaseArticle(page, size);</b>
+<b class="fc">&nbsp;        List&lt;SimpleArticleInfoVO&gt; simpleArticleInfoVOS = articles.stream().map(article -&gt; {</b>
+<b class="fc">&nbsp;            SimpleArticleInfoVO simpleArticleInfoVO = new SimpleArticleInfoVO();</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(article, simpleArticleInfoVO);</b>
+<b class="fc">&nbsp;            return simpleArticleInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        return RestBean.success(simpleArticleInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 分页获取科普文章列表
+&nbsp;     * @param page 页数
+&nbsp;     * @param size 每页大小
+&nbsp;     * @return 科普文章列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/science/list&quot;)
+&nbsp;    @Operation(summary = &quot;分页获取科普文章列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleArticleInfoVO&gt;&gt; getScienceArticle(@RequestParam(defaultValue = &quot;1&quot;) Integer page,
+&nbsp;                                                                 @RequestParam(defaultValue = &quot;10&quot;) Integer size){
+<b class="fc">&nbsp;        List&lt;Article&gt; articles = articleService.getScienceArticle(page, size);</b>
+<b class="fc">&nbsp;        List&lt;SimpleArticleInfoVO&gt; simpleArticleInfoVOS = articles.stream().map(article -&gt; {</b>
+<b class="fc">&nbsp;            SimpleArticleInfoVO simpleArticleInfoVO = new SimpleArticleInfoVO();</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(article, simpleArticleInfoVO);</b>
+<b class="fc">&nbsp;            return simpleArticleInfoVO;</b>
+<b class="fc">&nbsp;        }).toList();</b>
+<b class="fc">&nbsp;        return RestBean.success(simpleArticleInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据id获取文章
+&nbsp;     * @param id 文章id
+&nbsp;     * @return 文章
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get&quot;)
+&nbsp;    @Operation(summary = &quot;根据id获取文章&quot;)
+&nbsp;    public RestBean&lt;ArticleInfoVO&gt; getArticle(@RequestParam Integer id,
+&nbsp;                                              HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        Article article = articleService.getById(id);</b>
+<b class="fc">&nbsp;        if (article == null) {</b>
+<b class="nc">&nbsp;            return RestBean.failure(400, &quot;文章不存在&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        ArticleInfoVO articleInfoVO = new ArticleInfoVO();</b>
+<b class="fc">&nbsp;        BeanUtils.copyProperties(article, articleInfoVO);</b>
+<b class="fc">&nbsp;        ArticleFavorites articleFavorites = articleFavoritesService.getArticleFavorites(accountId, id);</b>
+<b class="fc">&nbsp;        articleInfoVO.setIsFavorite(articleFavorites != null);</b>
+<b class="fc">&nbsp;        return RestBean.success(articleInfoVO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据id收藏文章
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @return 是否收藏成功
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/favorites/add&quot;)
+&nbsp;    @Operation(summary = &quot;根据id收藏文章&quot;)
+&nbsp;    public RestBean&lt;ArticleFavorites&gt; addArticleFavorites(@RequestParam Integer articleId,
+&nbsp;                                                          HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        ArticleFavorites articleFavorites = articleFavoritesService.addArticleFavorites(accountId, articleId);</b>
+<b class="fc">&nbsp;        return articleFavorites != null ? RestBean.success(articleFavorites) : RestBean.failure(400, &quot;收藏失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 根据id取消收藏文章
+&nbsp;     * @param articleId 文章id
+&nbsp;     * @return 是否取消成功
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/delete&quot;)
+&nbsp;    @Operation(summary = &quot;根据id取消收藏文章&quot;)
+&nbsp;    public RestBean&lt;Void&gt; deleteArticleFavorites(@RequestParam Integer articleId,
+&nbsp;                                                 HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        boolean isSuccess = articleFavoritesService.deleteArticleFavorites(accountId, articleId);</b>
+<b class="fc">&nbsp;        return isSuccess ? RestBean.success() : RestBean.failure(400, &quot;取消收藏失败&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取已收藏的疾病预防文章列表
+&nbsp;     * @return 文章列表
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/disease/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取已收藏的疾病预防文章列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleArticleInfoVO&gt;&gt; getArticleFavoritesList(@RequestParam Integer page,
+&nbsp;                                                                       @RequestParam Integer size,
+&nbsp;                                                                       HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;ArticleFavorites&gt; articleFavorites = articleFavoritesService.getDiseaseArticleFavorites(accountId, page, size);</b>
+<b class="fc">&nbsp;        if (articleFavorites == null) {</b>
+<b class="nc">&nbsp;            return RestBean.success();</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;SimpleArticleInfoVO&gt; simpleArticleInfoVOS = new java.util.ArrayList&lt;&gt;(articleFavorites.stream().map(articleFavorite -&gt; {</b>
+<b class="fc">&nbsp;            SimpleArticleInfoVO simpleArticleInfoVO = new SimpleArticleInfoVO();</b>
+<b class="fc">&nbsp;            Article article = articleService.getById(articleFavorite.getArticleId());</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(article, simpleArticleInfoVO);</b>
+<b class="fc">&nbsp;            return simpleArticleInfoVO;</b>
+<b class="fc">&nbsp;        }).toList());</b>
+<b class="fc">&nbsp;        simpleArticleInfoVOS.sort((o1, o2) -&gt; o2.getId() - o1.getId());</b>
+<b class="fc">&nbsp;        return RestBean.success(simpleArticleInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取已收藏的科普文章列表
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/favorites/science/list&quot;)
+&nbsp;    @Operation(summary = &quot;获取已收藏的科普文章列表&quot;)
+&nbsp;    public RestBean&lt;List&lt;SimpleArticleInfoVO&gt;&gt; getScienceArticleFavoritesList(@RequestParam Integer page,
+&nbsp;                                                                              @RequestParam Integer size,
+&nbsp;                                                                              HttpServletRequest request){
+<b class="fc">&nbsp;        Integer accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+<b class="fc">&nbsp;        List&lt;ArticleFavorites&gt; articleFavorites = articleFavoritesService.getScienceArticleFavorites(accountId, page, size);</b>
+<b class="fc">&nbsp;        if (articleFavorites == null) {</b>
+<b class="nc">&nbsp;            return RestBean.success();</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;SimpleArticleInfoVO&gt; simpleArticleInfoVOS = new java.util.ArrayList&lt;&gt;(articleFavorites.stream().map(articleFavorite -&gt; {</b>
+<b class="fc">&nbsp;            SimpleArticleInfoVO simpleArticleInfoVO = new SimpleArticleInfoVO();</b>
+<b class="fc">&nbsp;            Article article = articleService.getById(articleFavorite.getArticleId());</b>
+<b class="fc">&nbsp;            BeanUtils.copyProperties(article, simpleArticleInfoVO);</b>
+<b class="fc">&nbsp;            return simpleArticleInfoVO;</b>
+<b class="fc">&nbsp;        }).toList());</b>
+<b class="fc">&nbsp;        simpleArticleInfoVOS.sort((o1, o2) -&gt; o2.getId() - o1.getId());</b>
+<b class="fc">&nbsp;        return RestBean.success(simpleArticleInfoVOS);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

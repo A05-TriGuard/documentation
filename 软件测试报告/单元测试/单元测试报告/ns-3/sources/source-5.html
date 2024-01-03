@@ -1,0 +1,254 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > BloodPressureController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: BloodPressureController (com.triguard.backend.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BloodPressureController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BloodPressureController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">BloodPressureController$$SpringCGLIB$$1</td>
+  </tr>
+  <tr>
+    <td class="name">BloodPressureController$$SpringCGLIB$$2</td>
+  </tr>
+  <tr>
+    <td class="name">BloodPressureController$$SpringCGLIB$$3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.controller;
+&nbsp;
+&nbsp;import com.triguard.backend.entity.RestBean;
+&nbsp;import com.triguard.backend.entity.dto.BloodPressure;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodPressure.BloodPressureCreateVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodPressure.BloodPressureFilterVO;
+&nbsp;import com.triguard.backend.entity.vo.request.BloodPressure.BloodPressureUpdateVO;
+&nbsp;import com.triguard.backend.entity.vo.response.BloodPressure.BloodPressureFilteredVO;
+&nbsp;import com.triguard.backend.service.BloodPressureService;
+&nbsp;import com.triguard.backend.utils.ConstUtils;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import jakarta.validation.constraints.Pattern;
+&nbsp;import org.springframework.validation.annotation.Validated;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 用于血压相关Controller包含用户的血压信息的增删改查
+&nbsp; */
+&nbsp;@Validated
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/blood-pressure&quot;)
+&nbsp;@Tag(name = &quot;血压相关接口&quot;)
+<b class="fc">&nbsp;public class BloodPressureController {</b>
+&nbsp;    @Resource
+&nbsp;    BloodPressureService bloodPressureService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 添加血压记录
+&nbsp;     * @param vo 血压记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @Operation(summary = &quot;添加血压记录&quot;)
+&nbsp;    public RestBean&lt;BloodPressure&gt; recordBloodPressure(@RequestBody @Valid BloodPressureCreateVO vo,
+&nbsp;                                              HttpServletRequest request){
+&nbsp;        Integer accountId;
+<b class="fc">&nbsp;        if (vo.getAccountId() != null){</b>
+<b class="fc">&nbsp;            accountId = vo.getAccountId();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        BloodPressure bloodPressure = bloodPressureService.createBloodPressure(accountId, vo);</b>
+<b class="fc">&nbsp;        return bloodPressure == null ? RestBean.failure(400, &quot;添加血压记录失败&quot;) : RestBean.success(bloodPressure);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除血压记录
+&nbsp;     * @param id 血压记录id
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/delete&quot;)
+&nbsp;    @Operation(summary = &quot;删除血压记录&quot;)
+&nbsp;    public RestBean&lt;Void&gt; deleteBloodPressure(@RequestParam Integer id){
+<b class="fc">&nbsp;        String message = bloodPressureService.deleteBloodPressure(id);</b>
+<b class="fc">&nbsp;        return message == null ? RestBean.success() : RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 修改血压记录
+&nbsp;     * @param vo 血压记录表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/update&quot;)
+&nbsp;    @Operation(summary = &quot;修改血压记录&quot;)
+&nbsp;    public RestBean&lt;Void&gt; updateBloodPressure(@RequestBody @Valid BloodPressureUpdateVO vo){
+<b class="fc">&nbsp;        String message = bloodPressureService.updateBloodPressure(vo);</b>
+<b class="fc">&nbsp;        return message == null ? RestBean.success() : RestBean.failure(400, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血压记录
+&nbsp;     * @param date 日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-by-date&quot;)
+&nbsp;    @Operation(summary = &quot;按日期获取血压记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;BloodPressure&gt;&gt; getBloodPressure(@RequestParam(required = false) Integer accountId,
+&nbsp;                                                          @RequestParam @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;) String date,
+&nbsp;                                           HttpServletRequest request){
+<b class="fc">&nbsp;        if (accountId == null){</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodPressure&gt; bloodPressureList = bloodPressureService.getBloodPressure(accountId, date);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodPressureList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血压记录
+&nbsp;     * @param startDate 开始日期
+&nbsp;     * @param endDate 结束日期
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/get-by-date-range&quot;)
+&nbsp;    @Operation(summary = &quot;按日期范围获取血压记录&quot;)
+&nbsp;    public RestBean&lt;List&lt;BloodPressure&gt;&gt; getBloodPressure(@RequestParam(required = false) Integer accountId,
+&nbsp;                                                          @RequestParam @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;) String startDate,
+&nbsp;                                                          @RequestParam @Pattern(regexp = &quot;^\\d{4}-\\d{2}-\\d{2}$&quot;) String endDate,
+&nbsp;                                                          HttpServletRequest request){
+<b class="fc">&nbsp;        if (accountId == null){</b>
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodPressure&gt; bloodPressureList = bloodPressureService.getBloodPressure(accountId, startDate, endDate);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodPressureList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取血压记录
+&nbsp;     * @param vo 数据筛选表单
+&nbsp;     * @return 响应结果
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/get-by-filter&quot;)
+&nbsp;    @Operation(summary = &quot;按条件筛选血压记录&quot;)
+&nbsp;    public RestBean&lt;BloodPressureFilteredVO&gt; getBloodPressure(@RequestBody @Valid BloodPressureFilterVO vo,
+&nbsp;                                                              HttpServletRequest request){
+&nbsp;        Integer accountId;
+<b class="fc">&nbsp;        if (vo.getAccountId() != null){</b>
+<b class="fc">&nbsp;            accountId = vo.getAccountId();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            accountId = (Integer) request.getAttribute(ConstUtils.ATTR_USER_ID);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;BloodPressure&gt; bloodPressureList = bloodPressureService.getBloodPressure(accountId, vo);</b>
+<b class="fc">&nbsp;        BloodPressureFilteredVO bloodPressureFilteredVO = new BloodPressureFilteredVO(bloodPressureList);</b>
+<b class="fc">&nbsp;        return RestBean.success(bloodPressureFilteredVO);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>

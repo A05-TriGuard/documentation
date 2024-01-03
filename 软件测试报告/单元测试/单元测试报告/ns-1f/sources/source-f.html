@@ -1,0 +1,354 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=GBK"> 
+  <title>Coverage Report > GuardServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.triguard.backend.service.Impl</a>
+</div>
+
+<h1>Coverage Summary for Class: GuardServiceImpl (com.triguard.backend.service.Impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GuardServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.7%
+  </span>
+  <span class="absValue">
+    (94/106)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GuardServiceImpl$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.7%
+  </span>
+  <span class="absValue">
+    (94/106)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.triguard.backend.service.Impl;
+&nbsp;
+&nbsp;import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+&nbsp;import com.triguard.backend.entity.dto.*;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.WardActivityInfoVO;
+&nbsp;import com.triguard.backend.entity.vo.response.Guard.WardActivityVO;
+&nbsp;import com.triguard.backend.mapper.GuardianMapper;
+&nbsp;import com.triguard.backend.service.*;
+&nbsp;import jakarta.annotation.Resource;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.text.SimpleDateFormat;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * 监护人相关服务实现类
+&nbsp; */
+&nbsp;@Service
+<b class="fc">&nbsp;public class GuardServiceImpl extends ServiceImpl&lt;GuardianMapper, Guard&gt; implements GuardService {</b>
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    AccountService accountService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodPressureService bloodPressureService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodSugarService bloodSugarService;
+&nbsp;
+&nbsp;    @Resource
+&nbsp;    BloodLipidsService bloodLipidsService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取监护人列表
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @return 监护人列表
+&nbsp;     */
+&nbsp;    public List&lt;Guard&gt; getGuardianList(Integer wardId) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .eq(&quot;is_accepted&quot;, true)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除监护人
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    public String deleteGuardian(Integer wardId, Integer guardianId) {
+<b class="fc">&nbsp;        Guard guardian = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (guardian == null) {</b>
+<b class="nc">&nbsp;            return &quot;监护人不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.removeById(guardian.getId());</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置监护人昵称
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param nickname 监护人昵称
+&nbsp;     * @return 设置结果
+&nbsp;     */
+&nbsp;    public String setGuardianNickname(Integer wardId, Integer guardianId, String nickname) {
+<b class="fc">&nbsp;        Guard guardian = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (guardian == null) {</b>
+<b class="fc">&nbsp;            return &quot;监护人不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        guardian.setGuardianNickname(nickname);</b>
+<b class="fc">&nbsp;        this.updateById(guardian);</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 邀请监护人
+&nbsp;     * @param wardId 用户ID
+&nbsp;     * @param email 监护人邮箱
+&nbsp;     * @return 邀请结果
+&nbsp;     */
+&nbsp;    public String inviteGuardian(Integer wardId, String email) {
+<b class="fc">&nbsp;        Account account = accountService.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;email&quot;, email)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (account == null) {</b>
+<b class="fc">&nbsp;            return &quot;邮箱错误，用户不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Guard guard = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, account.getId())</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (guard != null) {</b>
+<b class="fc">&nbsp;            return &quot;已经添加过该监护人&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        guard = new Guard();</b>
+<b class="fc">&nbsp;        guard.setWardId(wardId);</b>
+<b class="fc">&nbsp;        guard.setWardNickname(accountService.getById(wardId).getUsername());</b>
+<b class="fc">&nbsp;        guard.setGuardianId(account.getId());</b>
+<b class="fc">&nbsp;        guard.setGuardianNickname(account.getUsername());</b>
+<b class="fc">&nbsp;        guard.setIsAccepted(false);</b>
+<b class="fc">&nbsp;        guard.setCreatedAt(new Date());</b>
+<b class="fc">&nbsp;        return this.save(guard) ? null : &quot;邀请失败&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取被监护人列表
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @return 被监护人列表
+&nbsp;     */
+&nbsp;    public List&lt;Guard&gt; getWardList(Integer guardianId) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;is_accepted&quot;, true)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取被监护人邀请列表
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @return 监护人列表
+&nbsp;     */
+&nbsp;    public List&lt;Guard&gt; getWardInvitationList(Integer guardianId) {
+<b class="fc">&nbsp;        return this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;is_accepted&quot;, false)</b>
+<b class="fc">&nbsp;                .list();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 获取被监护人活动信息
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @return 被监护人活动信息
+&nbsp;     */
+&nbsp;    public WardActivityVO getWardActivity(Integer guardianId, Integer wardId) {
+<b class="fc">&nbsp;        Guard guard = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (guard == null) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        WardActivityVO wardActivityVO = new WardActivityVO();</b>
+<b class="fc">&nbsp;        Account wardAccount = accountService.getById(wardId);</b>
+<b class="fc">&nbsp;        wardActivityVO.setWardInfo(new WardActivityVO.WardInfo(wardAccount.getId(), wardAccount.getEmail(), wardAccount.getUsername(), guard.getWardNickname(), null));</b>
+<b class="fc">&nbsp;        Date today = new Date();</b>
+<b class="fc">&nbsp;        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</b>
+<b class="fc">&nbsp;        String todayString = simpleDateFormat.format(today);</b>
+<b class="fc">&nbsp;        List&lt;BloodPressure&gt; bloodPressureList = bloodPressureService.getBloodPressure(wardId, todayString);</b>
+<b class="fc">&nbsp;        List&lt;BloodSugar&gt; bloodSugarList = bloodSugarService.getBloodSugar(wardId, todayString);</b>
+<b class="fc">&nbsp;        List&lt;BloodLipids&gt; bloodLipidsList = bloodLipidsService.getBloodLipids(wardId, todayString);</b>
+<b class="fc">&nbsp;        List&lt;WardActivityInfoVO&gt; wardActivityInfoVOS = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (BloodPressure bloodPressure : bloodPressureList) {</b>
+<b class="nc">&nbsp;            wardActivityInfoVOS.add(new WardActivityInfoVO(bloodPressure.getTime(), 0));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        for (BloodSugar bloodSugar : bloodSugarList) {</b>
+<b class="nc">&nbsp;            wardActivityInfoVOS.add(new WardActivityInfoVO(bloodSugar.getTime(), 1));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        for (BloodLipids bloodLipids : bloodLipidsList) {</b>
+<b class="nc">&nbsp;            wardActivityInfoVOS.add(new WardActivityInfoVO(bloodLipids.getTime(), 2));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        if (!wardActivityInfoVOS.isEmpty()) {</b>
+<b class="nc">&nbsp;            wardActivityInfoVOS.sort(Comparator.comparing(WardActivityInfoVO::getTime));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        wardActivityVO.setActivities(wardActivityInfoVOS);</b>
+<b class="fc">&nbsp;        return wardActivityVO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 删除被监护人
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @return 删除结果
+&nbsp;     */
+&nbsp;    public String deleteWard(Integer guardianId, Integer wardId) {
+<b class="fc">&nbsp;        Guard ward = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (ward == null) {</b>
+<b class="nc">&nbsp;            return &quot;被监护人不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.removeById(ward.getId());</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 接受邀请
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param invitationId 被监护人ID
+&nbsp;     * @return 接受结果
+&nbsp;     */
+&nbsp;    public String acceptWardInvitation(Integer guardianId, Integer invitationId, Boolean isAccepted) {
+<b class="fc">&nbsp;        Guard guard = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;id&quot;, invitationId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (guard == null) {</b>
+<b class="nc">&nbsp;            return &quot;邀请不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (isAccepted) {</b>
+<b class="fc">&nbsp;            guard.setIsAccepted(true);</b>
+<b class="fc">&nbsp;            this.updateById(guard);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            this.removeById(guard.getId());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 设置被监护人昵称
+&nbsp;     * @param guardianId 监护人ID
+&nbsp;     * @param wardId 被监护人ID
+&nbsp;     * @param nickname 被监护人昵称
+&nbsp;     * @return 设置结果
+&nbsp;     */
+&nbsp;    public String setWardNickname(Integer guardianId, Integer wardId, String nickname) {
+<b class="fc">&nbsp;        Guard ward = this.query()</b>
+<b class="fc">&nbsp;                .eq(&quot;guardian_id&quot;, guardianId)</b>
+<b class="fc">&nbsp;                .eq(&quot;ward_id&quot;, wardId)</b>
+<b class="fc">&nbsp;                .one();</b>
+<b class="fc">&nbsp;        if (ward == null) {</b>
+<b class="nc">&nbsp;            return &quot;被监护人不存在&quot;;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        ward.setWardNickname(nickname);</b>
+<b class="fc">&nbsp;        this.updateById(ward);</b>
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-02 23:41</div>
+</div>
+</body>
+</html>
